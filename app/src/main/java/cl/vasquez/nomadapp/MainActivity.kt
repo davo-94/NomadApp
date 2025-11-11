@@ -43,7 +43,7 @@ fun HelloNomad() {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("🌍 NomadApp – Bitácora Nómada", style = MaterialTheme.typography.headlineMedium)
+        Text("NomadApp – Bitácora Nómada", style = MaterialTheme.typography.headlineMedium)
         Spacer(modifier = Modifier.height(8.dp))
         Text("Base Compose + MVVM lista")
     }
