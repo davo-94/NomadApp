@@ -20,6 +20,7 @@ import cl.vasquez.nomadapp.ui.theme.NomadAppTheme
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.material3.MaterialTheme
+import cl.vasquez.nomadapp.navigation.AppNavigation
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,14 +28,13 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             NomadAppTheme {
-                Surface(modifier = Modifier.fillMaxSize()) {
-                    HelloNomad()
+                AppNavigation()
 
                 }
             }
         }
     }
-}
+
 
 @Composable
 fun HelloNomad() {

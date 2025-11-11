@@ -16,17 +16,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import androidx.lifecycle.viewmodel.compose.viewModel
 import cl.vasquez.nomadapp.viewmodel.PostViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 import androidx.compose.ui.res.painterResource
-
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PostFormScreen(
+    navController: NavController,
     modifier: Modifier = Modifier,
     viewModel: PostViewModel = viewModel()
 ) {
@@ -51,11 +54,31 @@ fun PostFormScreen(
         imageUri = uri // Guarda el URI seleccionado
     }
 
+    Scaffold (
+        topBar = {
+            TopAppBar(
+                title = {Text ("Nueva Publicación") },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "Volver"
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary
+                )
+            )
+        }
+    ) { innerPadding ->
     /** Interfaz visual del formulario
      */
     Column(
         modifier = modifier
             .fillMaxSize()
+            .padding(innerPadding)
             .padding(16.dp),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -65,7 +88,6 @@ fun PostFormScreen(
             style = MaterialTheme.typography.headlineMedium
         )
         Spacer(modifier = Modifier.height(16.dp))
-
         /**
          * Campo: Título
          */
@@ -76,9 +98,7 @@ fun PostFormScreen(
             singleLine = true,
             modifier = Modifier.fillMaxWidth()
         )
-
         Spacer(modifier = Modifier.height(8.dp))
-
         /**
          * Campo descripción
          */
@@ -89,7 +109,6 @@ fun PostFormScreen(
             modifier = Modifier.fillMaxWidth(),
             maxLines = 5
         )
-
         Spacer(modifier = Modifier.height(8.dp))
 
         /**
@@ -98,7 +117,6 @@ fun PostFormScreen(
         Button(onClick = { launcher.launch("image/*") }) {
             Text("Seleccionar imagen")
         }
-
         Spacer(modifier = Modifier.height(8.dp))
 
         /**
@@ -116,9 +134,7 @@ fun PostFormScreen(
                     .padding(4.dp)
             )
         }
-
         Spacer(modifier = Modifier.height(8.dp))
-
         /**
          * Botón para guardar la publicación
          */
@@ -140,6 +156,7 @@ fun PostFormScreen(
             Text("Guardar publicación")
         }
     }
+}
 }
 
 
