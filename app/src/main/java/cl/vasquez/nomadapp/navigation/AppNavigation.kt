@@ -8,6 +8,8 @@ import androidx.navigation.compose.rememberNavController
 import cl.vasquez.nomadapp.view.HomeScreen
 import cl.vasquez.nomadapp.view.PostFormScreen
 import cl.vasquez.nomadapp.view.PostListScreen
+import cl.vasquez.nomadapp.view.ContactFormScreen
+
 
 /**
  * Composable principal que define las rutas de navegación de la app
@@ -34,6 +36,10 @@ fun AppNavigation() {
         //Ruta Lista (mis publicaciones)
         composable("post_list") {
             PostListScreen(navController = navController)
+        }
+        //Ruta formulario de contacto
+        composable("contact_form") {
+            ContactFormScreen(navController = navController)
         }
     }
 }

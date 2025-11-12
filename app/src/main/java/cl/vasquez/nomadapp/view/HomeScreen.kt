@@ -78,6 +78,18 @@ fun HomeScreen(navController: NavController) {
             ){
                 Text("Mis publicaciones")
             }
+            Button(
+                onClick = { navController.navigate("contact_form") },
+                    modifier = Modifier
+                    .fillMaxWidth()
+                        .padding(vertical = 8.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.tertiary
+                )
+            ) {
+                Text("Contacto")
+            }
+
         }
     }
 }

@@ -1,0 +1,12 @@
+[
+  { "nombre": "Chile", "codigo": "CL" },
+  { "nombre": "Argentina", "codigo": "AR" },
+  { "nombre": "Brasil", "codigo": "BR" },
+  { "nombre": "España", "codigo": "ES" },
+  { "nombre": "Tailandia", "codigo": "TH" },
+  { "nombre": "Camboya", "codigo": "KH" },
+  { "nombre": "México", "codigo": "MX" },
+  { "nombre": "Italia", "codigo": "IT" },
+  { "nombre": "Japón", "codigo": "JP" },
+  { "nombre": "Australia", "codigo": "AU" }
+]
