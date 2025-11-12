@@ -150,6 +150,28 @@ fun LoginScreen(
                 )
             )
 
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Checkbox: Recuerda la sesión
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Checkbox(
+                    checked = uiState.rememberSession,
+                    onCheckedChange = { viewModel.toggleRememberSession() },
+                    modifier = Modifier.size(24.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "Recuerda mi sesión",
+                    color = TextLight,
+                    fontSize = 14.sp
+                )
+            }
+
             Spacer(modifier = Modifier.height(28.dp))
 
             // Botón Login con gradiente

@@ -1,6 +1,8 @@
 package cl.vasquez.nomadapp.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -14,6 +16,7 @@ import cl.vasquez.nomadapp.view.LoginScreen
 import cl.vasquez.nomadapp.view.RegisterScreen
 import cl.vasquez.nomadapp.view.EditPostScreen
 import cl.vasquez.nomadapp.view.GuestPostListScreen
+import cl.vasquez.nomadapp.data.SessionManager
 
 /**
  * Composable principal que define las rutas de navegación de la app.
@@ -21,10 +24,31 @@ import cl.vasquez.nomadapp.view.GuestPostListScreen
 @Composable
 fun AppNavigation() {
     val navController: NavHostController = rememberNavController()
+    
+    // Recolectar el estado de la sesión
+    val hasActiveSession = SessionManager.hasActiveSession().collectAsState(initial = null).value
+    val userRole = SessionManager.getUserRole().collectAsState(initial = null).value
+
+    // Determine starting destination based on saved session
+    val startDestination = when {
+        hasActiveSession == true && userRole != null -> {
+            if (userRole == "admin") "home_admin" else "home_guest"
+        }
+        else -> "login"
+    }
+
+    // Navegar a la pantalla inicial correcta
+    LaunchedEffect(startDestination) {
+        if (startDestination != "login") {
+            navController.navigate(startDestination) {
+                popUpTo("login") { inclusive = true }
+            }
+        }
+    }
 
     NavHost(
         navController = navController,
-        startDestination = "login" // pantalla inicial
+        startDestination = startDestination
     ) {
         // Pantalla de login
         composable("login") {

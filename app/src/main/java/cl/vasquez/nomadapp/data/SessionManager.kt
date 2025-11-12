@@ -33,12 +33,14 @@ object SessionManager {
 
     private val USER_EMAIL = stringPreferencesKey("user_email")
     private val USER_ROLE = stringPreferencesKey("user_role")
+    private val REMEMBER_SESSION = stringPreferencesKey("remember_session")
 
     // Guardar sesión del usuario después de login exitoso
-    suspend fun saveUserSession(email: String, role: String) {
+    suspend fun saveUserSession(email: String, role: String, rememberSession: Boolean = false) {
         requireContext().dataStore.edit { preferences ->
             preferences[USER_EMAIL] = email
             preferences[USER_ROLE] = role
+            preferences[REMEMBER_SESSION] = if (rememberSession) "true" else "false"
         }
     }
 
@@ -62,5 +64,10 @@ object SessionManager {
     // Verificar si hay sesión activa
     fun hasActiveSession(): Flow<Boolean> = requireContext().dataStore.data.map { preferences ->
         preferences[USER_EMAIL] != null
+    }
+
+    // Obtener si el usuario pidió recordar la sesión
+    fun isSessionRemembered(): Flow<Boolean> = requireContext().dataStore.data.map { preferences ->
+        preferences[REMEMBER_SESSION] == "true"
     }
 }

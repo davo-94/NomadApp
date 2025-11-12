@@ -22,7 +22,8 @@ data class LoginUiState(
     val passwordError: String? = null,
     val isLoading: Boolean = false,
     val loginResult: LoginResult = LoginResult.Idle,
-    val passwordVisible: Boolean = false
+    val passwordVisible: Boolean = false,
+    val rememberSession: Boolean = false
 )
 
 class LoginViewModel(application: Application): AndroidViewModel(application) {
@@ -53,6 +54,10 @@ class LoginViewModel(application: Application): AndroidViewModel(application) {
         _uiState.value = _uiState.value.copy(passwordVisible = !_uiState.value.passwordVisible)
     }
 
+    fun toggleRememberSession() {
+        _uiState.value = _uiState.value.copy(rememberSession = !_uiState.value.rememberSession)
+    }
+
     private fun validateFields(): Boolean {
         val emailError = ValidationUtils.getEmailErrorMessage(_uiState.value.email)
         val passwordError = ValidationUtils.getPasswordErrorMessage(_uiState.value.password)
@@ -76,7 +81,7 @@ class LoginViewModel(application: Application): AndroidViewModel(application) {
             
             // Guardar sesión si el login fue exitoso
             if (result is LoginResult.Success) {
-                SessionManager.saveUserSession(result.user.email, result.user.role)
+                SessionManager.saveUserSession(result.user.email, result.user.role, _uiState.value.rememberSession)
             }
             
             _uiState.value = _uiState.value.copy(isLoading = false, loginResult = result)
