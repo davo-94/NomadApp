@@ -22,6 +22,7 @@ import java.util.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Logout
+import androidx.compose.material.icons.filled.CheckCircle
 import cl.vasquez.nomadapp.data.SessionManager
 import kotlinx.coroutines.runBlocking
 import coil.compose.AsyncImage
@@ -44,6 +45,11 @@ fun PostFormScreen(
      * Estado para múltiples imágenes seleccionadas
      */
     var imageUris by remember { mutableStateOf<List<Uri>>(emptyList()) }
+
+    /**
+     * Estado para controlar la visibilidad del diálogo de confirmación
+     */
+    var showConfirmationDialog by remember { mutableStateOf(false) }
 
     /**
      * Lanza el selector de imágenes (galería del teléfono)
@@ -194,10 +200,8 @@ fun PostFormScreen(
                             date,
                             imageUris.map { it.toString() } // ← lista de URIs como String
                         )
-                        // Limpia todos los campos después de guardar
-                        title = ""
-                        description = ""
-                        imageUris = emptyList()
+                        // Muestra el diálogo de confirmación
+                        showConfirmationDialog = true
                     }
                 },
                 modifier = Modifier.fillMaxWidth()
@@ -205,5 +209,50 @@ fun PostFormScreen(
                 Text("Guardar publicación")
             }
         }
+    }
+
+    /**
+     * Diálogo de confirmación de publicación
+     */
+    if (showConfirmationDialog) {
+        AlertDialog(
+            onDismissRequest = {
+                showConfirmationDialog = false
+                // Limpia los campos después de cerrar el diálogo
+                title = ""
+                description = ""
+                imageUris = emptyList()
+                // Navega de regreso a la pantalla anterior
+                navController.popBackStack()
+            },
+            icon = {
+                Icon(
+                    imageVector = Icons.Default.CheckCircle, // Usando Icons.Default para consistencia
+                    contentDescription = "Confirmación",
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            },
+            title = {
+                Text("¡Publicación confirmada!")
+            },
+            text = {
+                Text("Tu publicación ha sido publicada exitosamente.")
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showConfirmationDialog = false
+                        // Limpia los campos después de cerrar el diálogo
+                        title = ""
+                        description = ""
+                        imageUris = emptyList()
+                        // Navega de regreso a la pantalla anterior
+                        navController.popBackStack()
+                    }
+                ) {
+                    Text("Aceptar")
+                }
+            }
+        )
     }
 }

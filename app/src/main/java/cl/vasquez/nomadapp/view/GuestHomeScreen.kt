@@ -58,7 +58,7 @@ fun GuestHomeScreen(navController: NavController) {
                 contentDescription = "Fondo de viajes",
                 modifier = Modifier
                     .fillMaxSize()
-                    .alpha(0.3f),
+                    .alpha(0.2f),
                 contentScale = ContentScale.Crop
             )
 
