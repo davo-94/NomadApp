@@ -4,12 +4,15 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import cl.vasquez.nomadapp.data.UserDao
+
 
 //Version = 2 fuerza la reconstrucción de tablas
-@Database(entities = [Post::class, Contact::class], version = 2 )
+@Database(entities = [Post::class, Contact::class, User::class], version = 2 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun postDao(): PostDao
     abstract fun contactDao(): ContactDao
+    abstract fun userDao(): UserDao
 
     companion object{
         /**

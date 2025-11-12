@@ -12,9 +12,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+    primary = MagentaPrimary,
+    secondary = CyanAccent,
+    tertiary = TealAccent,
+    background = DarkBackground,
+    surface = DarkCardBackground,
+    surfaceVariant = SurfaceDark,
+    onPrimary = TextLight,
+    onSecondary = DarkBackground,
+    onTertiary = TextLight,
+    onBackground = TextLight,
+    onSurface = TextLight,
+    onSurfaceVariant = TextGrey
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -35,20 +44,12 @@ private val LightColorScheme = lightColorScheme(
 
 @Composable
 fun NomadAppTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
+    darkTheme: Boolean = true,  // Siempre usar tema oscuro
     // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    dynamicColor: Boolean = false,  // Desactivar colores dinámicos
     content: @Composable () -> Unit
 ) {
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
-
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
-    }
+    val colorScheme = DarkColorScheme  // Usar siempre el esquema oscuro
 
     MaterialTheme(
         colorScheme = colorScheme,

@@ -9,35 +9,46 @@ import cl.vasquez.nomadapp.view.HomeScreen
 import cl.vasquez.nomadapp.view.PostFormScreen
 import cl.vasquez.nomadapp.view.PostListScreen
 import cl.vasquez.nomadapp.view.ContactFormScreen
-
+import cl.vasquez.nomadapp.view.LoginScreen
+import cl.vasquez.nomadapp.view.RegisterScreen
+import cl.vasquez.nomadapp.view.GuestHomeScreen
 
 /**
  * Composable principal que define las rutas de navegación de la app
- * Composable le indica a Kotlin que esa función dibuja UI en pantalla.
  */
 @Composable
 fun AppNavigation() {
-    //recordamos el controlador de navegación -> permite moverse entre pantallas
     val navController: NavHostController = rememberNavController()
 
-    //NavHost define el contenedor que gestiona las rutas
     NavHost(
         navController = navController,
-        startDestination = "home" //pantalla inicial
-    ){
-        //Ruta home (hub principal)
+        startDestination = "login" // pantalla inicial
+    ) {
+        // Pantalla de login
+        composable("login") {
+            LoginScreen(navController = navController)
+        }
+        // Registro de usuario
+        composable("register") {
+            RegisterScreen(navController = navController)
+        }
+        // Home principal (admin o usuario logueado)
         composable("home") {
             HomeScreen(navController = navController)
         }
-        //Ruta Formulario (nueva publicación)
+        // Home para invitados
+        composable("home_guest") {
+            GuestHomeScreen(navController = navController)
+        }
+        // Crear nueva publicación
         composable("post_form") {
             PostFormScreen(navController = navController)
         }
-        //Ruta Lista (mis publicaciones)
+        // Listado de publicaciones
         composable("post_list") {
             PostListScreen(navController = navController)
         }
-        //Ruta formulario de contacto
+        // Formulario de contacto
         composable("contact_form") {
             ContactFormScreen(navController = navController)
         }

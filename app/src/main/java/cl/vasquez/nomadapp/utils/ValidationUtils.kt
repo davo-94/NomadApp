@@ -6,6 +6,7 @@ package cl.vasquez.nomadapp.utils
  */
 
 object ValidationUtils {
+
     //Nombre
     fun isValidNombre(nombre: String): Boolean {
         if (nombre.isBlank()) return false
@@ -55,6 +56,26 @@ object ValidationUtils {
         return when {
             mensaje.isBlank() -> "El mensaje es requerido"
             mensaje.length > 300 -> "El mensaje no puede exceder 300 caracteres"
+            else -> null
+        }
+    }
+
+    //Contraseña (Login / Registro)
+    fun isValidPassword(password: String): Boolean {
+        if (password.isBlank()) return false
+        if (password.length < 6) return false
+        // Debe contener letras y números
+        val hasLetter = password.any { it.isLetter() }
+        val hasDigit = password.any { it.isDigit() }
+        return hasLetter && hasDigit
+    }
+
+    fun getPasswordErrorMessage(password: String): String? {
+        return when {
+            password.isBlank() -> "La contraseña no puede estar vacía"
+            password.length < 6 -> "Debe tener al menos 6 caracteres"
+            !password.any { it.isDigit() } -> "Debe contener al menos un número"
+            !password.any { it.isLetter() } -> "Debe contener letras"
             else -> null
         }
     }
