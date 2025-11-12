@@ -67,7 +67,7 @@ abstract class AppDatabase : RoomDatabase() {
                      * Esta opción es ideal durante desarrollo, ya que evita
                      * conflictos de migraciones al modificar entidades.
                      *
-                     * ⚠️ En producción, deberías reemplazarla por addMigrations(...)
+                     * En producción, se debería reemplazar por addMigrations(...)
                      * para preservar los datos del usuario.
                      */
                     .fallbackToDestructiveMigration()
@@ -77,7 +77,7 @@ abstract class AppDatabase : RoomDatabase() {
                 INSTANCE = instance
 
                 /**
-                 * Pre-popular usuarios de prueba en la base de datos.
+                 * Pre-poblar usuarios de prueba en la base de datos.
                  * Este bloque se ejecuta al crear la instancia y agrega
                  * dos usuarios predeterminados (solo si no existen).
                  *

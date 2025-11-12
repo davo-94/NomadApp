@@ -13,7 +13,7 @@ import cl.vasquez.nomadapp.view.ContactFormScreen
 import cl.vasquez.nomadapp.view.LoginScreen
 import cl.vasquez.nomadapp.view.RegisterScreen
 import cl.vasquez.nomadapp.view.EditPostScreen
-
+import cl.vasquez.nomadapp.view.GuestPostListScreen
 
 /**
  * Composable principal que define las rutas de navegación de la app.
@@ -51,11 +51,12 @@ fun AppNavigation() {
             PostFormScreen(navController = navController)
         }
 
-        // Listado de publicaciones
+        // Listado de publicaciones (usuarios logueados)
         composable("post_list") {
             PostListScreen(navController = navController)
         }
 
+        // Edición de publicaciones
         composable("editPost/{id}") { backStackEntry ->
             val id = backStackEntry.arguments?.getString("id")?.toIntOrNull()
             id?.let {
@@ -66,6 +67,11 @@ fun AppNavigation() {
         // Formulario de contacto
         composable("contact_form") {
             ContactFormScreen(navController = navController)
+        }
+
+        // Listado de publicaciones para invitados (solo lectura)
+        composable("guest_post_list") {
+            GuestPostListScreen(navController = navController)
         }
     }
 }

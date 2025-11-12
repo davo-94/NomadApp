@@ -7,14 +7,15 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import cl.vasquez.nomadapp.data.SessionManager
 import cl.vasquez.nomadapp.view.components.HeaderSection
 import cl.vasquez.nomadapp.view.components.PrimaryButton
 import cl.vasquez.nomadapp.view.components.SecondaryButton
+import coil.compose.AsyncImage
+import androidx.compose.ui.layout.ContentScale
 import kotlinx.coroutines.runBlocking
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -45,39 +46,69 @@ fun HomeScreen(navController: NavController) {
             )
         }
     ) { innerPadding ->
-        Column(
+        // Contenedor principal con fondo + contenido
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(horizontal = 24.dp, vertical = 16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Top
         ) {
-            HeaderSection(
-                title = "¡Bienvenido a tu Bitácora Nómada!",
-                subtitle = "Publica tus experiencias y explora las de otros viajeros."
+            // 🏞 Fondo semitransparente (de Nico)
+            AsyncImage(
+                model = "https://images.unsplash.com/photo-1501785888041-af3ef285b470",
+                contentDescription = "Fondo de viajes",
+                modifier = Modifier
+                    .fillMaxSize()
+                    .alpha(0.3f),
+                contentScale = ContentScale.Crop
             )
 
-            Spacer(modifier = Modifier.height(24.dp))
+            // 🧭 Contenido principal
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 24.dp, vertical = 16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Top
+            ) {
+                /**
+                 * Sección superior de encabezado reutilizable
+                 * Muestra título y subtítulo de bienvenida
+                 */
+                HeaderSection(
+                    title = "¡Bienvenido a tu Bitácora Nómada!",
+                    subtitle = "Publica tus experiencias y explora las de otros viajeros."
+                )
 
-            PrimaryButton(
-                text = "Nueva Publicación",
-                onClick = { navController.navigate("post_form") }
-            )
+                Spacer(modifier = Modifier.height(24.dp))
 
-            Spacer(modifier = Modifier.height(12.dp))
+                /**
+                 * Botón principal que lleva a la creación de nueva publicación
+                 */
+                PrimaryButton(
+                    text = "Nueva Publicación",
+                    onClick = { navController.navigate("post_form") }
+                )
 
-            SecondaryButton(
-                text = "Mis publicaciones",
-                onClick = { navController.navigate("post_list") }
-            )
+                Spacer(modifier = Modifier.height(12.dp))
 
-            Spacer(modifier = Modifier.height(12.dp))
+                /**
+                 * Botón secundario que muestra lista de publicaciones del usuario
+                 */
+                SecondaryButton(
+                    text = "Mis publicaciones",
+                    onClick = { navController.navigate("post_list") }
+                )
 
-            SecondaryButton(
-                text = "Contacto",
-                onClick = { navController.navigate("contact_form") }
-            )
+                Spacer(modifier = Modifier.height(12.dp))
+
+                /**
+                 * Botón secundario que lleva al formulario de contacto
+                 */
+                SecondaryButton(
+                    text = "Contacto",
+                    onClick = { navController.navigate("contact_form") }
+                )
+            }
         }
     }
 }
