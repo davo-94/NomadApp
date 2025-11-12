@@ -17,42 +17,63 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.lifecycle.viewmodel.compose.viewModel
 import cl.vasquez.nomadapp.viewmodel.PostViewModel
-import java.text.SimpleDateFormat
-import java.util.*
+import coil.compose.AsyncImage
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Logout
 import cl.vasquez.nomadapp.data.SessionManager
 import kotlinx.coroutines.runBlocking
-import coil.compose.AsyncImage
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PostFormScreen(
+fun EditPostScreen(
     navController: NavController,
-    modifier: Modifier = Modifier,
+    postId: Int,
     viewModel: PostViewModel = viewModel()
 ) {
-    /**
-     * Estados locales para los campos del formulario
-     */
-    var title by remember { mutableStateOf("") }
-    var description by remember { mutableStateOf("") }
-    val date = remember { SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date()) }
+    //  Obtenemos el contexto y coroutineScope
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
 
     /**
-     * Estado para múltiples imágenes seleccionadas
+     * Cargamos el post actual desde la lista del ViewModel
      */
-    var imageUris by remember { mutableStateOf<List<Uri>>(emptyList()) }
+    val post = viewModel.postList.collectAsState(initial = emptyList()).value.find { it.id == postId }
+
+    /**
+     * Si no se encuentra el post, mostramos mensaje de error
+     */
+    if (post == null) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            Text("Publicación no encontrada")
+        }
+        return
+    }
+
+    /**
+     * Estados locales inicializados con los valores actuales del post
+     */
+    var title by remember { mutableStateOf(post.title) }
+    var description by remember { mutableStateOf(post.description) }
+    val date = remember { post.date } // mantenemos la fecha original
+    //  ahora soportamos múltiples imágenes (convirtiendo desde List<String> a List<Uri>)
+    var imageUris by remember {
+        mutableStateOf(
+            post.imageUris.filter { it.isNotBlank() }.map { Uri.parse(it) }
+        )
+    }
 
     /**
      * Lanza el selector de imágenes (galería del teléfono)
-     * Ahora permite seleccionar varias imágenes y solicita permisos persistentes
+     * Incluye solicitud de permiso persistente para que las URIs sigan disponibles tras reiniciar la app.
+     * Ahora permite seleccionar múltiples imágenes.
      */
-    val context = LocalContext.current
-
     val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetMultipleContents() // ← selección múltiple
+        contract = ActivityResultContracts.GetMultipleContents()
     ) { uris: List<Uri> ->
         if (uris.isNotEmpty()) {
             uris.forEach { uri ->
@@ -61,11 +82,9 @@ fun PostFormScreen(
                         uri,
                         Intent.FLAG_GRANT_READ_URI_PERMISSION
                     )
-                } catch (e: SecurityException) {
-                    e.printStackTrace()
-                }
+                } catch (_: SecurityException) { /* ya teníamos permiso, ignorar */ }
             }
-            imageUris = uris
+            imageUris = uris // reemplaza el set actual por las nuevas seleccionadas
         }
     }
 
@@ -75,7 +94,7 @@ fun PostFormScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Nueva Publicación") },
+                title = { Text("Editar Publicación") },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
@@ -86,7 +105,7 @@ fun PostFormScreen(
                 },
                 actions = {
                     /**
-                     * Botón de logout (mantiene consistencia con el resto de pantallas)
+                     * Botón de logout (mantiene consistencia visual con el resto de pantallas)
                      */
                     IconButton(onClick = {
                         runBlocking { SessionManager.logout() }
@@ -108,9 +127,9 @@ fun PostFormScreen(
             )
         }
     ) { innerPadding ->
-        /** Interfaz visual del formulario */
+        /** Interfaz visual del formulario de edición */
         Column(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
                 .padding(16.dp),
@@ -118,7 +137,7 @@ fun PostFormScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "Nueva publicación",
+                text = "Editar publicación",
                 style = MaterialTheme.typography.headlineMedium
             )
 
@@ -151,16 +170,16 @@ fun PostFormScreen(
             Spacer(modifier = Modifier.height(8.dp))
 
             /**
-             * Botón para seleccionar múltiples imágenes desde la galería
+             * Botón para seleccionar nuevas imágenes desde la galería
              */
             Button(onClick = { launcher.launch("image/*") }) {
-                Text("Seleccionar imágenes")
+                Text("Cambiar imágenes")
             }
 
             Spacer(modifier = Modifier.height(8.dp))
 
             /**
-             * Vista previa de las imágenes seleccionadas (en fila horizontal)
+             * Vista previa de las imágenes seleccionadas (actuales o nuevas)
              */
             if (imageUris.isNotEmpty()) {
                 LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -180,29 +199,29 @@ fun PostFormScreen(
             Spacer(modifier = Modifier.height(8.dp))
 
             /**
-             * Botón para guardar la publicación
+             * Botón para guardar los cambios
              */
             Button(
                 onClick = {
-                    /**
-                     * Validación simple: no dejar campos vacíos
-                     */
                     if (title.isNotEmpty() && description.isNotEmpty()) {
-                        viewModel.addPost(
-                            title,
-                            description,
-                            date,
-                            imageUris.map { it.toString() } // ← lista de URIs como String
-                        )
-                        // Limpia todos los campos después de guardar
-                        title = ""
-                        description = ""
-                        imageUris = emptyList()
+                        coroutineScope.launch {
+                            //  Actualizamos el post existente (no insertamos uno nuevo)
+                            viewModel.updatePost(
+                                cl.vasquez.nomadapp.data.Post(
+                                    id = postId,
+                                    title = title,
+                                    description = description,
+                                    date = date,
+                                    imageUris = imageUris.map { it.toString() } // guardamos lista
+                                )
+                            )
+                            navController.popBackStack()
+                        }
                     }
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Guardar publicación")
+                Text("Guardar cambios")
             }
         }
     }

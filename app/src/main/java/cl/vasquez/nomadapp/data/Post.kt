@@ -9,5 +9,5 @@ data class Post(
     val title: String,
     val description: String,
     val date: String,
-    val imageUri: String? = null
+    val imageUris: List<String> = emptyList()
 )

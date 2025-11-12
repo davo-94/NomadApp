@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class PostViewModel(application: Application): AndroidViewModel(application) {
+class PostViewModel(application: Application) : AndroidViewModel(application) {
     private val repository: PostRepository
     private val _postList = MutableStateFlow<List<Post>>(emptyList())
     val postList: StateFlow<List<Post>> = _postList
@@ -21,22 +21,46 @@ class PostViewModel(application: Application): AndroidViewModel(application) {
         loadPosts()
     }
 
+    /**
+     * Carga todas las publicaciones desde la base de datos
+     */
     fun loadPosts() {
         viewModelScope.launch {
             _postList.value = repository.getAll()
         }
     }
 
-    fun addPost(title: String, description: String, date: String, imageUri: String?) {
+    /**
+     * Inserta una nueva publicación en la base de datos.
+     * Ahora soporta múltiples imágenes por publicación.
+     */
+    fun addPost(title: String, description: String, date: String, imageUris: List<String>) {
         viewModelScope.launch {
-            repository.insert(Post(title = title, description = description, date = date, imageUri = imageUri))
-        loadPosts()
+            repository.insert(
+                Post(
+                    title = title,
+                    description = description,
+                    date = date,
+                    imageUris = imageUris // ← guarda lista completa
+                )
+            )
+            loadPosts()
         }
     }
 
+    /**
+     * Elimina una publicación existente
+     */
     fun deletePost(post: Post) {
         viewModelScope.launch {
             repository.delete(post)
+            loadPosts()
+        }
+    }
+
+    fun updatePost(post: Post) {
+        viewModelScope.launch {
+            repository.update(post)
             loadPosts()
         }
     }

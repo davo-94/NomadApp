@@ -50,8 +50,10 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation("androidx.compose.foundation:foundation:1.6.0")
     implementation("androidx.datastore:datastore-preferences:1.1.1")
-
+    // Coil para Jetpack Compose (AsyncImage)
+    implementation("io.coil-kt:coil-compose:2.4.0")
     //Gson
     implementation("com.google.code.gson:gson:2.10.1")
     //Icons

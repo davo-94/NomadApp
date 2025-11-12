@@ -93,24 +93,28 @@ fun ContactFormScreen(
             Spacer(Modifier.height(8.dp))
 
             //país
-            val paisError = ValidationUtils.getPaisErrorMessage(paisSeleccionado)
-            Box {
+            //Text(text = "País", style = MaterialTheme.typography.bodyLarge)
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 4.dp)
+            ) {
                 OutlinedTextField(
                     value = paisSeleccionado,
                     onValueChange = {},
                     readOnly = true,
-                    label = { Text("País") },
-                    isError = paisError != null,
-                    supportingText = {
-                        if (paisError != null) Text(paisError, color = MaterialTheme.colorScheme.error)
-                    },
+                    enabled = false, // evita foco y bloqueo del dropdown
+                    label = { Text("Selecciona un país") },
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable { expanded = true }
                 )
                 DropdownMenu(
                     expanded = expanded,
-                    onDismissRequest = { expanded = false }
+                    onDismissRequest = { expanded = false },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(max = 300.dp) // si hay muchos países, limita la altura
                 ) {
                     paises.forEach { pais ->
                         DropdownMenuItem(

@@ -12,4 +12,10 @@ interface PostDao {
 
     @Delete
     suspend fun delete(post: Post)
+
+    @Query("SELECT * FROM posts WHERE id = :id LIMIT 1")
+    suspend fun getById(id: Int): Post?
+
+    @Update
+    suspend fun update(post: Post)
 }

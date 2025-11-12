@@ -1,7 +1,8 @@
 package cl.vasquez.nomadapp.view
 
-//Importaciones básicas de Jetpack Compose
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -10,23 +11,33 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import cl.vasquez.nomadapp.data.SessionManager
+import cl.vasquez.nomadapp.view.components.HeaderSection
+import cl.vasquez.nomadapp.view.components.PrimaryButton
+import cl.vasquez.nomadapp.view.components.SecondaryButton
+import kotlinx.coroutines.runBlocking
 
-/**
- * Pantalla principal (hub) de la app
- * donde el usuario podrá elegir entre crear o ver publicaciones
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(navController: NavController) {
-
-    /**
-     * Scaffold permite definir estructura base:
-     * AppBar arriba, contenido en el centro, etc.
-     */
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text("Bitácora Nómada") },
+                actions = {
+                    IconButton(onClick = {
+                        runBlocking { SessionManager.logout() }
+                        navController.navigate("login") {
+                            popUpTo(0) { inclusive = true }
+                        }
+                    }) {
+                        Icon(
+                            imageVector = Icons.Default.Logout,
+                            contentDescription = "Cerrar sesión",
+                            tint = MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primary,
                     titleContentColor = MaterialTheme.colorScheme.onPrimary
@@ -34,62 +45,39 @@ fun HomeScreen(navController: NavController) {
             )
         }
     ) { innerPadding ->
-        //Columna central: centra los botones vertical y horizontalmente
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(24.dp),
+                .padding(horizontal = 24.dp, vertical = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-                ) {
-            //Mensaje de bienvenida
-            Text(
-                text = "¡Bienvenido a tu Bitácora Nómada!",
-                style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.Bold,
-                fontSize = 22.sp,
-                modifier = Modifier.padding(bottom = 32.dp)
+            verticalArrangement = Arrangement.Top
+        ) {
+            HeaderSection(
+                title = "¡Bienvenido a tu Bitácora Nómada!",
+                subtitle = "Publica tus experiencias y explora las de otros viajeros."
             )
-            //Botón para crear nueva publicación
-            Button(
-                onClick = {
-                    //Navegamos hacia la pantalla del formulario
-                    navController.navigate("post_form")
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp)
-            ) {
-                Text("Nueva Publicación")
-            }
-            //Botón para ver publicaciones existentes
-            Button(
-                onClick = {
-                    //Navegamos hacia la lista de publicaciones
-                    navController.navigate("post_list")
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.secondary
-                )
-            ){
-                Text("Mis publicaciones")
-            }
-            Button(
-                onClick = { navController.navigate("contact_form") },
-                    modifier = Modifier
-                    .fillMaxWidth()
-                        .padding(vertical = 8.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.tertiary
-                )
-            ) {
-                Text("Contacto")
-            }
 
+            Spacer(modifier = Modifier.height(24.dp))
+
+            PrimaryButton(
+                text = "Nueva Publicación",
+                onClick = { navController.navigate("post_form") }
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            SecondaryButton(
+                text = "Mis publicaciones",
+                onClick = { navController.navigate("post_list") }
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            SecondaryButton(
+                text = "Contacto",
+                onClick = { navController.navigate("contact_form") }
+            )
         }
     }
 }

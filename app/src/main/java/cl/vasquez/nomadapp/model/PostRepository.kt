@@ -12,6 +12,8 @@ class PostRepository(private val postDao: PostDao) {
     suspend fun insert(post: Post) = postDao.insert(post)
     suspend fun getAll(): List<Post> = postDao.getAll()
     suspend fun delete(post: Post) = postDao.delete(post)
+    suspend fun getPostById(id: Int): Post? = postDao.getById(id)
+    suspend fun update(post: Post) = postDao.update(post)
 
 
 }

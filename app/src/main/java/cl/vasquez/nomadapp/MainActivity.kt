@@ -21,10 +21,16 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.material3.MaterialTheme
 import cl.vasquez.nomadapp.navigation.AppNavigation
+import cl.vasquez.nomadapp.data.SessionManager
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        //Inicializar SessionManager con el contexto de la app
+        SessionManager.initialize(applicationContext)
+
         enableEdgeToEdge()
         setContent {
             NomadAppTheme {
