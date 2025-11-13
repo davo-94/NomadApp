@@ -4,6 +4,10 @@ import cl.vasquez.nomadapp.data.UserDao
 import cl.vasquez.nomadapp.data.User
 import kotlinx.coroutines.delay
 
+/**
+ * LoginResult es una sealed class porque permite definir un conjunto limitado y controlado
+ * de estados para un proceso. Solo existen los 4 estados posibles que se declaran.
+ */
 sealed class LoginResult {
     data class Success(val user: User): LoginResult()
     data class Error(val message: String): LoginResult()
@@ -11,6 +15,9 @@ sealed class LoginResult {
     object Idle: LoginResult()
 }
 
+/**
+ * LoginRepository es el responsable de ejecutar la lógica del login. Recibe el DAO y trabaja con él.
+ */
 class LoginRepository(private val userDao: UserDao) {
 
     /**

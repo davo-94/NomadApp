@@ -8,11 +8,18 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 private const val DATASTORE_NAME = "session_preferences"
+
+/**
+ * Context.dataStore crea una extensión del Context llamada dataStore. O sea, en cualquier
+ * lugar donde esté un Context se puede llamar a context.dataSore, lo que da acceso
+ * a session_preferences. <-- Este archivo
+ */
 private val Context.dataStore by preferencesDataStore(name = DATASTORE_NAME)
 
 /**
- * Object que gestiona la sesión del usuario mediante DataStore.
+ * Object (singleton; solo una instancia) que gestiona la sesión del usuario mediante DataStore.
  * Corregido para evitar errores de inicialización del contexto.
+ * Manejo de sesiones global.
  */
 object SessionManager {
 

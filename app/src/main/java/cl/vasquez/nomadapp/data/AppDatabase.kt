@@ -38,20 +38,30 @@ abstract class AppDatabase : RoomDatabase() {
         private val MIGRATION_3_4 = object : Migration(3, 4) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 // Agrega columna imageUris si no existe
-                db.execSQL("ALTER TABLE posts ADD COLUMN imageUris TEXT NOT NULL DEFAULT ''")
+                db.execSQL("ALTER TABLE " +
+                                    "posts " +
+                                "ADD COLUMN imageUris TEXT NOT NULL DEFAULT ''")
 
                 // Copia valor de la columna anterior si existía
                 db.execSQL(
                     """
                     UPDATE posts
-                    SET imageUris = CASE
-                        WHEN imageUri IS NOT NULL AND imageUri <> '' THEN imageUri
+                    SET imageUris = 
+                    CASE
+                        WHEN imageUri IS NOT NULL AND imageUri <> '' 
+                            THEN imageUri
                         ELSE ''
                     END
                     """.trimIndent()
                 )
             }
         }
+
+        /**
+         *  Este bloque garantiza una sola instancia global y evita que se creen varias bases
+         *  al mismo tiempo en caso. Asegura que todos los componentes usen la misma DB.
+         */
+
 
         fun getDatabase(context: Context): AppDatabase {
             return INSTANCE ?: synchronized(this) {
@@ -71,8 +81,11 @@ abstract class AppDatabase : RoomDatabase() {
                      * para preservar los datos del usuario.
                      */
                     .fallbackToDestructiveMigration()
-                    //.addMigrations(MIGRATION_3_4) //
-                    .build()
+                    //.addMigrations(MIGRATION_3_4) // <-- Intento fallido de migración
+                    .build()                        // Usamos .fallbackToDestructiveMigration
+                                                    //para que, en caso de que las versiones no
+                                                    //coincidan, Room no migre los datos sino que
+                                                    //borre la base antigua y cree una desde cero.
 
                 INSTANCE = instance
 
@@ -82,6 +95,8 @@ abstract class AppDatabase : RoomDatabase() {
                  * dos usuarios predeterminados (solo si no existen).
                  *
                  * Se ejecuta en un hilo separado (Dispatchers.IO) para no bloquear la UI.
+                 * Si se ejecutara en el hilo principal, la app podría bloquearse.
+                 * "Haz esto fuera de la pantalla para no trabar la app."
                  */
                 CoroutineScope(Dispatchers.IO).launch {
                     try {
