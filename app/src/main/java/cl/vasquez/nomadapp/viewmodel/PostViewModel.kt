@@ -32,7 +32,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
 
     /**
      * Inserta una nueva publicación en la base de datos.
-     * Ahora soporta múltiples imágenes por publicación.
+     * Soporta múltiples imágenes por publicación.
      */
     fun addPost(title: String, description: String, date: String, imageUris: List<String>) {
         viewModelScope.launch {
