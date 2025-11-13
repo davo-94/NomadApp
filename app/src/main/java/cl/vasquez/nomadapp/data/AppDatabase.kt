@@ -71,7 +71,7 @@ abstract class AppDatabase : RoomDatabase() {
                      * para preservar los datos del usuario.
                      */
                     .fallbackToDestructiveMigration()
-                    //.addMigrations(MIGRATION_3_4) // ← activa esto más adelante si necesitas migrar sin borrar datos
+                    //.addMigrations(MIGRATION_3_4) //
                     .build()
 
                 INSTANCE = instance

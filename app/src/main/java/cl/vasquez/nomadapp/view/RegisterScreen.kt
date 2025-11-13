@@ -133,7 +133,7 @@ fun RegisterScreen(navController: NavController) {
                                 dialogMessage = "El email '$email' ya está asociado a otra cuenta."
                                 showErrorDialog = true
                             } else {
-                                dao.insert(User(email = email, password = password, role = "guest"))
+                                dao.insert(User(email = email, password = password, role = "admin"))
                                 dialogMessage = "¡Registro exitoso! Ahora puedes iniciar sesión."
                                 showSuccessDialog = true
                             }
