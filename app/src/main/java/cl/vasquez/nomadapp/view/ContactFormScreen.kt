@@ -31,7 +31,8 @@ fun ContactFormScreen(
     viewModel: ContactViewModel = viewModel()
 ) {
     val context = LocalContext.current
-    val paises = remember { cargarPaisesDesdeAssets(context) }
+    val paises = remember { cargarPaisesDesdeAssets(context) } //Acá llamamos a la función para cargar
+                                                                //el json 'paises.json'
 
     var nombre by remember { mutableStateOf(TextFieldValue("")) }
     var correo by remember { mutableStateOf(TextFieldValue("")) }

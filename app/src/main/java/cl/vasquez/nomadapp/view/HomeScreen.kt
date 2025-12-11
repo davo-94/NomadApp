@@ -1,5 +1,10 @@
 package cl.vasquez.nomadapp.view
 
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.runtime.getValue
+import cl.vasquez.nomadapp.viewmodel.LocationViewModel
+import cl.vasquez.nomadapp.data.remote.LocationResponse
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Logout
@@ -18,9 +23,16 @@ import coil.compose.AsyncImage
 import androidx.compose.ui.layout.ContentScale
 import kotlinx.coroutines.runBlocking
 
+
 @OptIn(ExperimentalMaterial3Api::class)
+
 @Composable
 fun HomeScreen(navController: NavController) {
+    println("DEBUG_HOME: HomeScreen LOADED")
+
+    val locationViewModel: LocationViewModel = viewModel()
+    val location by locationViewModel.location.collectAsStateWithLifecycle(initialValue = null)
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -51,8 +63,9 @@ fun HomeScreen(navController: NavController) {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
+
         ) {
-            // 🏞 Fondo semitransparente (de Nico)
+            //  Fondo semitransparente (de Nico)
             AsyncImage(
                 model = "https://images.unsplash.com/photo-1501785888041-af3ef285b470",
                 contentDescription = "Fondo de viajes",
@@ -61,8 +74,19 @@ fun HomeScreen(navController: NavController) {
                     .alpha(0.2f),
                 contentScale = ContentScale.Crop
             )
+            //Widget de ubicacion
+            location?.let { loc ->
+                Text(
+                    text =  "📍 ${loc.city ?: ""}, ${loc.country_name ?: ""}",
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(16.dp),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onPrimary
+                )
+            }
 
-            // 🧭 Contenido principal
+            // Contenido principal
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -71,7 +95,7 @@ fun HomeScreen(navController: NavController) {
                 verticalArrangement = Arrangement.Top
             ) {
                 /**
-                 * Sección superior de encabezado reutilizable
+                 * Seccion superior de encabezado reutilizable
                  * Muestra título y subtítulo de bienvenida
                  */
                 HeaderSection(

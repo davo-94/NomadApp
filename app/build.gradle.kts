@@ -66,6 +66,12 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.2")
     //NavController
     implementation("androidx.navigation:navigation-compose:2.8.3")
+    //Retrofit
+    implementation("com.squareup.retrofit2:retrofit:2.11.0")
+    //Converter JSON (Gson)
+    implementation("com.squareup.retrofit2:converter-gson:2.11.0")
+    //OkHttp logging
+    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
     kapt("androidx.room:room-compiler:2.6.1")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
