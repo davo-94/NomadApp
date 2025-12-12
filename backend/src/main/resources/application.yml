@@ -1,0 +1,46 @@
+spring:
+  application:
+    name: nomadapp-backend
+  
+  datasource:
+    url: jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS=(PROTOCOL=TCPS)(HOST=adb.sa-santiago-1.oraclecloud.com)(PORT=1522))(CONNECT_DATA=(SERVICE_NAME=gec91f46eadff57_personal_medium.adb.oraclecloud.com)))
+    username: admin
+    password: Salocingamer99
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+    
+    # Oracle Wallet Configuration
+    oracle:
+      net:
+        ssl_version: "TLSv1.3"
+        wallet_location: file:C:\Users\Nicolas\.oracle\wallets
+  
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.OracleDialect
+        format_sql: true
+        use_sql_comments: true
+    show-sql: false
+  
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+
+jwt:
+  secret: ${JWT_SECRET:MiClaveSecretaMuyLargaParaQueSeaSegura123456789012345678901234567890}
+  expiration: 86400000  # 24 horas en milisegundos
+
+logging:
+  level:
+    root: INFO
+    cl.vasquez.nomadapp: DEBUG
+    org.springframework.security: DEBUG

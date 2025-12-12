@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  nomadapp-backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      ORACLE_HOST: ${ORACLE_HOST}
+      ORACLE_PORT: ${ORACLE_PORT}
+      ORACLE_SERVICE_NAME: ${ORACLE_SERVICE_NAME}
+      ORACLE_USER: ${ORACLE_USER}
+      ORACLE_PASSWORD: ${ORACLE_PASSWORD}
+      ORACLE_WALLET_PATH: ${ORACLE_WALLET_PATH}
+      JWT_SECRET: ${JWT_SECRET}
+    volumes:
+      - ${ORACLE_WALLET_PATH}:/opt/oracle/wallets
+    networks:
+      - nomadapp-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/api/posts"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  nomadapp-network:
+    driver: bridge
