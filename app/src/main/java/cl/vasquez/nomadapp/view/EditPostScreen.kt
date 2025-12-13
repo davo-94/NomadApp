@@ -1,7 +1,7 @@
 package cl.vasquez.nomadapp.view
 
+import cl.vasquez.nomadapp.data.remote.dto.PostDto
 import android.content.Intent
-import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
@@ -23,142 +23,77 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Logout
 import cl.vasquez.nomadapp.data.SessionManager
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditPostScreen(
     navController: NavController,
-    postId: Int,
+    postId: Long,
     viewModel: PostViewModel = viewModel()
 ) {
-    //  Obtenemos el contexto y coroutineScope
     val context = LocalContext.current
-    val coroutineScope = rememberCoroutineScope()
 
-    /**
-     * Cargamos el post actual desde la lista del ViewModel
-     */
-    val post = viewModel.postList.collectAsState(initial = emptyList()).value.find { it.id == postId }
+    /** Observamos posts desde backend */
+    val posts by viewModel.posts.collectAsState()
 
-    /**
-     * Si no se encuentra el post, mostramos mensaje de error
-     */
+    /** Buscamos el post por ID */
+    val post = posts.find { it.id == postId }
+
+    /** Si aún no cargan o no existe */
     if (post == null) {
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
-            Text("Publicación no encontrada")
+            Text("Cargando publicación…")
         }
         return
     }
 
-    /**
-     * Estados locales inicializados con los valores actuales del post
-     */
+    /** Estados locales */
     var title by remember { mutableStateOf(post.title) }
     var description by remember { mutableStateOf(post.description) }
-    val date = remember { post.date } // mantenemos la fecha original
-    //  ahora soportamos múltiples imágenes (convirtiendo desde List<String> a List<Uri>)
-    var imageUris by remember {
-        mutableStateOf(
-            post.imageUris.filter { it.isNotBlank() }.map { Uri.parse(it) }
-        )
-    }
+    val date = post.date
 
-    /**
-     * Lanza el selector de imágenes (galería del teléfono)
-     * Incluye solicitud de permiso persistente para que las URIs sigan disponibles tras reiniciar la app.
-     * Ahora permite seleccionar múltiples imágenes.
-     */
-    val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetMultipleContents()
-    ) { uris: List<Uri> ->
-        if (uris.isNotEmpty()) {
-            uris.forEach { uri ->
-                try {
-                    context.contentResolver.takePersistableUriPermission(
-                        uri,
-                        Intent.FLAG_GRANT_READ_URI_PERMISSION
-                    )
-                } catch (_: SecurityException) { /* ya teníamos permiso, ignorar */ }
-            }
-            imageUris = uris // reemplaza el set actual por las nuevas seleccionadas
-        }
-    }
-
-    /**
-     * Estructura principal con barra superior
-     */
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text("Editar Publicación") },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "Volver"
-                        )
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Volver")
                     }
                 },
                 actions = {
-                    /**
-                     * Botón de logout (mantiene consistencia visual con el resto de pantallas)
-                     */
                     IconButton(onClick = {
                         runBlocking { SessionManager.logout() }
                         navController.navigate("login") {
                             popUpTo(0) { inclusive = true }
                         }
                     }) {
-                        Icon(
-                            imageVector = Icons.Default.Logout,
-                            contentDescription = "Cerrar sesión",
-                            tint = MaterialTheme.colorScheme.onPrimary
-                        )
+                        Icon(Icons.Default.Logout, contentDescription = "Cerrar sesión")
                     }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimary
-                )
+                }
             )
         }
-    ) { innerPadding ->
-        /** Interfaz visual del formulario de edición */
+    ) { padding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
+                .padding(padding)
                 .padding(16.dp),
-            verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                text = "Editar publicación",
-                style = MaterialTheme.typography.headlineMedium
-            )
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            /**
-             * Campo: Título
-             */
             OutlinedTextField(
                 value = title,
                 onValueChange = { title = it },
                 label = { Text("Título") },
-                singleLine = true,
                 modifier = Modifier.fillMaxWidth()
             )
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            /**
-             * Campo: Descripción
-             */
             OutlinedTextField(
                 value = description,
                 onValueChange = { description = it },
@@ -167,56 +102,20 @@ fun EditPostScreen(
                 maxLines = 5
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-            /**
-             * Botón para seleccionar nuevas imágenes desde la galería
-             */
-            Button(onClick = { launcher.launch("image/*") }) {
-                Text("Cambiar imágenes")
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            /**
-             * Vista previa de las imágenes seleccionadas (actuales o nuevas)
-             */
-            if (imageUris.isNotEmpty()) {
-                LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    items(imageUris) { uri ->
-                        AsyncImage(
-                            model = uri,
-                            contentDescription = "Imagen seleccionada",
-                            modifier = Modifier
-                                .size(120.dp)
-                                .padding(4.dp),
-                            contentScale = ContentScale.Crop
-                        )
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            /**
-             * Botón para guardar los cambios
-             */
+            // Guardar cambios
             Button(
                 onClick = {
-                    if (title.isNotEmpty() && description.isNotEmpty()) {
-                        coroutineScope.launch {
-                            //  Actualizamos el post existente (no insertamos uno nuevo)
-                            viewModel.updatePost(
-                                cl.vasquez.nomadapp.data.Post(
-                                    id = postId,
-                                    title = title,
-                                    description = description,
-                                    date = date,
-                                    imageUris = imageUris.map { it.toString() } // guardamos lista
-                                )
-                            )
-                            navController.popBackStack()
-                        }
+                    val updated = PostDto(
+                        id = postId,
+                        title = title,
+                        description = description,
+                        date = date
+                    )
+
+                    viewModel.updatePost(postId, updated) {
+                        navController.popBackStack()
                     }
                 },
                 modifier = Modifier.fillMaxWidth()

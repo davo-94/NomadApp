@@ -82,7 +82,7 @@ fun AppNavigation() {
 
         // Edición de publicaciones
         composable("editPost/{id}") { backStackEntry ->
-            val id = backStackEntry.arguments?.getString("id")?.toIntOrNull()
+            val id = backStackEntry.arguments?.getString("id")?.toLongOrNull()
             id?.let {
                 EditPostScreen(navController = navController, postId = it)
             }

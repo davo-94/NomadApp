@@ -1,5 +1,6 @@
 package cl.vasquez.nomadapp.view
 
+import cl.vasquez.nomadapp.data.remote.dto.PostDto
 import android.content.Intent
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -62,7 +63,7 @@ fun PostFormScreen(
     val context = LocalContext.current
 
     val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetMultipleContents() // ← selección múltiple
+        contract = ActivityResultContracts.GetMultipleContents()
     ) { uris: List<Uri> ->
         if (uris.isNotEmpty()) {
             uris.forEach { uri ->
@@ -194,18 +195,21 @@ fun PostFormScreen(
              */
             Button(
                 onClick = {
-                    /**
-                     * Validación simple: no dejar campos vacíos
-                     */
                     if (title.isNotEmpty() && description.isNotEmpty()) {
-                        viewModel.addPost(
-                            title,
-                            description,
-                            date,
-                            imageUris.map { it.toString() } // ← lista de URIs como String
+                        val postDto = PostDto(
+                            title = title,
+                            description = description,
+                            date = date
+
                         )
-                        // Muestra el diálogo de confirmación
-                        showConfirmationDialog = true
+
+                        viewModel.createPostWithImages(
+                            post = postDto,
+                            imageUris = imageUris,
+                            context = context
+                        ) {
+                            showConfirmationDialog = true
+                        }
                     }
                 },
                 modifier = Modifier.fillMaxWidth()
@@ -231,7 +235,7 @@ fun PostFormScreen(
             },
             icon = {
                 Icon(
-                    imageVector = Icons.Default.CheckCircle, // Usando Icons.Default para consistencia
+                    imageVector = Icons.Default.CheckCircle,
                     contentDescription = "Confirmación",
                     tint = MaterialTheme.colorScheme.primary
                 )
