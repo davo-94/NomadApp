@@ -3,16 +3,23 @@ package cl.vasquez.nomadapp.view
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
 import androidx.lifecycle.viewmodel.compose.viewModel
 import cl.vasquez.nomadapp.viewmodel.PostViewModel
@@ -21,6 +28,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Logout
+import androidx.compose.material.icons.filled.Close
 import cl.vasquez.nomadapp.data.SessionManager
 import cl.vasquez.nomadapp.data.remote.dto.PostDto
 import coil.compose.AsyncImage
@@ -43,6 +51,9 @@ fun PostListScreen(
 
     /** Post seleccionado para eliminar */
     var postToDelete by remember { mutableStateOf<PostDto?>(null) }
+
+    /** Imagen seleccionada para preview */
+    var selectedImageUrl by remember { mutableStateOf<String?>(null) }
 
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
@@ -138,13 +149,24 @@ fun PostListScreen(
                                     if (post.imageUrls.isNotEmpty()) {
                                         Spacer(modifier = Modifier.height(8.dp))
                                         LazyRow(
+                                            contentPadding = PaddingValues(horizontal = 8.dp),
                                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                                         ) {
                                             items(post.imageUrls) { url ->
                                                 AsyncImage(
                                                     model = url,
                                                     contentDescription = null,
-                                                    modifier = Modifier.size(120.dp)
+                                                    contentScale = ContentScale.Crop,
+                                                    modifier = Modifier
+                                                        .height(120.dp)
+                                                        .aspectRatio(4f / 3f)
+                                                        .clip(RoundedCornerShape(12.dp))
+                                                        .background(
+                                                            MaterialTheme.colorScheme.surfaceVariant
+                                                        )
+                                                        .clickable {
+                                                            selectedImageUrl = url
+                                                        }
                                                 )
                                             }
                                         }
@@ -196,6 +218,38 @@ fun PostListScreen(
                         text = "Aún no hay publicaciones",
                         style = MaterialTheme.typography.bodyLarge,
                         fontSize = 16.sp
+                    )
+                }
+            }
+        }
+    }
+
+    /** Preview fullscreen de imagen */
+    selectedImageUrl?.let { imageUrl ->
+        Dialog(onDismissRequest = { selectedImageUrl = null }) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black),
+                contentAlignment = Alignment.Center
+            ) {
+                AsyncImage(
+                    model = imageUrl,
+                    contentDescription = "Preview imagen",
+                    contentScale = ContentScale.Fit,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                IconButton(
+                    onClick = { selectedImageUrl = null },
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(16.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = "Cerrar",
+                        tint = Color.White
                     )
                 }
             }

@@ -200,9 +200,16 @@ fun cargarPaisesDesdeAssets(context: Context): List<Pais> {
 }
 
 // Envía correo usando Intent implícito
-fun enviarCorreo(context: Context, nombre: String, correo: String, pais: String, mensaje: String) {
+fun enviarCorreo(
+    context: Context,
+    nombre: String,
+    correo: String,
+    pais: String,
+    mensaje: String,
+    onError: () -> Unit = {}
+) {
     val intent = Intent(Intent.ACTION_SEND).apply {
-        type = "message/rfc822"
+        type = "text/plain"
         putExtra(Intent.EXTRA_EMAIL, arrayOf("soporte@bitacoranomada.com"))
         putExtra(Intent.EXTRA_SUBJECT, "Nuevo mensaje de contacto")
         putExtra(
@@ -210,5 +217,12 @@ fun enviarCorreo(context: Context, nombre: String, correo: String, pais: String,
             "Nombre: $nombre\nCorreo: $correo\nPaís: $pais\nMensaje:\n$mensaje"
         )
     }
-    context.startActivity(Intent.createChooser(intent, "Enviar correo con..."))
+
+    try {
+        context.startActivity(Intent.createChooser(intent, "Enviar correo con..."))
+    } catch (e: Exception) {
+        onError()
+    }
 }
+
+

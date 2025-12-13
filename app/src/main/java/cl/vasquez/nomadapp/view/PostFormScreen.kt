@@ -44,7 +44,12 @@ fun PostFormScreen(
 
     var title by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
-    val date = remember { SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date()) }
+
+    val maxDescriptionChars = 1000
+
+    val date = remember {
+        SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date())
+    }
 
     /**
      * Estado para múltiples imágenes seleccionadas
@@ -128,6 +133,7 @@ fun PostFormScreen(
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+
             Text(
                 text = "Nueva publicación",
                 style = MaterialTheme.typography.headlineMedium
@@ -146,20 +152,33 @@ fun PostFormScreen(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
             /**
-             * Campo: Descripción
+             * Campo: Descripción (más grande + contador)
              */
             OutlinedTextField(
                 value = description,
-                onValueChange = { description = it },
+                onValueChange = {
+                    if (it.length <= maxDescriptionChars) {
+                        description = it
+                    }
+                },
                 label = { Text("Descripción") },
-                modifier = Modifier.fillMaxWidth(),
-                maxLines = 5
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(min = 160.dp),
+                minLines = 6,
+                maxLines = 10,
+                supportingText = {
+                    Text(
+                        text = "${description.length} / $maxDescriptionChars caracteres",
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
             /**
              * Botón para seleccionar múltiples imágenes desde la galería
@@ -188,7 +207,7 @@ fun PostFormScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             /**
              * Botón para guardar la publicación
@@ -200,7 +219,6 @@ fun PostFormScreen(
                             title = title,
                             description = description,
                             date = date
-
                         )
 
                         viewModel.createPostWithImages(
@@ -226,11 +244,9 @@ fun PostFormScreen(
         AlertDialog(
             onDismissRequest = {
                 showConfirmationDialog = false
-                // Limpia los campos después de cerrar el diálogo
                 title = ""
                 description = ""
                 imageUris = emptyList()
-                // Navega de regreso a la pantalla anterior
                 navController.popBackStack()
             },
             icon = {
@@ -240,21 +256,15 @@ fun PostFormScreen(
                     tint = MaterialTheme.colorScheme.primary
                 )
             },
-            title = {
-                Text("¡Publicación confirmada!")
-            },
-            text = {
-                Text("Tu publicación ha sido publicada exitosamente.")
-            },
+            title = { Text("¡Publicación confirmada!") },
+            text = { Text("Tu publicación ha sido publicada exitosamente.") },
             confirmButton = {
                 Button(
                     onClick = {
                         showConfirmationDialog = false
-                        // Limpia los campos después de cerrar el diálogo
                         title = ""
                         description = ""
                         imageUris = emptyList()
-                        // Navega de regreso a la pantalla anterior
                         navController.popBackStack()
                     }
                 ) {

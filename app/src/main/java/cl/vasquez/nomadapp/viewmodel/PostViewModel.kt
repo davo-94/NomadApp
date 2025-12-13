@@ -89,6 +89,58 @@ class PostViewModel : ViewModel() {
         }
     }
 
+    fun addImagesToPost(
+        postId: Long,
+        imageUris: List<Uri>,
+        context: Context,
+        onSuccess: () -> Unit = {}
+    ) {
+        viewModelScope.launch {
+            try {
+                if (imageUris.isEmpty()) {
+                    onSuccess()
+                    return@launch
+                }
+
+                val parts = imageUris.map { uri ->
+                    val inputStream = context.contentResolver.openInputStream(uri)
+                        ?: throw IllegalStateException("No se pudo abrir la imagen")
+
+                    val file = File.createTempFile("img_", ".jpg", context.cacheDir)
+                    file.outputStream().use { output ->
+                        inputStream.copyTo(output)
+                    }
+
+                    val requestBody =
+                        file.asRequestBody("image/*".toMediaTypeOrNull())
+
+                    MultipartBody.Part.createFormData(
+                        "files",
+                        file.name,
+                        requestBody
+                    )
+                }
+
+                android.util.Log.d(
+                    "UPLOAD_IMAGES",
+                    "Subiendo ${parts.size} imágenes al post $postId"
+                )
+
+                NomadApiClient.postApi.uploadImages(postId, parts)
+
+                loadPosts()
+                onSuccess()
+
+            } catch (e: Exception) {
+                android.util.Log.e(
+                    "ADD_IMAGES_ERROR",
+                    "Error al subir imágenes: ${e.message}",
+                    e
+                )
+            }
+        }
+    }
+
     fun loadPosts() {
         viewModelScope.launch {
             try {

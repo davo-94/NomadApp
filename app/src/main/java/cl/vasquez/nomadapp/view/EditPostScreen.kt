@@ -2,15 +2,21 @@ package cl.vasquez.nomadapp.view
 
 import cl.vasquez.nomadapp.data.remote.dto.PostDto
 import android.content.Intent
+import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -21,8 +27,10 @@ import coil.compose.AsyncImage
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Logout
+import androidx.compose.material.icons.filled.Close
 import cl.vasquez.nomadapp.data.SessionManager
 import kotlinx.coroutines.runBlocking
+import androidx.compose.ui.window.Dialog
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -33,19 +41,22 @@ fun EditPostScreen(
 ) {
     val context = LocalContext.current
 
+    /** Cargar posts al entrar */
+    LaunchedEffect(Unit) {
+        viewModel.loadPosts()
+    }
+
     /** Observamos posts desde backend */
     val posts by viewModel.posts.collectAsState()
-
-    /** Buscamos el post por ID */
     val post = posts.find { it.id == postId }
 
-    /** Si aún no cargan o no existe */
+    /** Mientras carga */
     if (post == null) {
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
-            Text("Cargando publicación…")
+            CircularProgressIndicator()
         }
         return
     }
@@ -54,6 +65,29 @@ fun EditPostScreen(
     var title by remember { mutableStateOf(post.title) }
     var description by remember { mutableStateOf(post.description) }
     val date = post.date
+
+    /** Nuevas imágenes seleccionadas */
+    var newImageUris by remember { mutableStateOf<List<Uri>>(emptyList()) }
+
+    /** Preview fullscreen */
+    var selectedImageUrl by remember { mutableStateOf<String?>(null) }
+
+    /** Selector de imágenes */
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetMultipleContents()
+    ) { uris ->
+        if (uris.isNotEmpty()) {
+            uris.forEach { uri ->
+                try {
+                    context.contentResolver.takePersistableUriPermission(
+                        uri,
+                        Intent.FLAG_GRANT_READ_URI_PERMISSION
+                    )
+                } catch (_: SecurityException) { }
+            }
+            newImageUris = uris
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -92,19 +126,68 @@ fun EditPostScreen(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
             OutlinedTextField(
                 value = description,
                 onValueChange = { description = it },
                 label = { Text("Descripción") },
-                modifier = Modifier.fillMaxWidth(),
-                maxLines = 5
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(min = 160.dp),
+                minLines = 6,
+                maxLines = 10
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Guardar cambios
+            /** Imágenes actuales del post */
+            if (post.imageUrls.isNotEmpty()) {
+                Text("Imágenes actuales", style = MaterialTheme.typography.titleSmall)
+                Spacer(modifier = Modifier.height(8.dp))
+
+                LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    items(post.imageUrls) { url ->
+                        AsyncImage(
+                            model = url,
+                            contentDescription = null,
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier
+                                .height(100.dp)
+                                .aspectRatio(4f / 3f)
+                                .clip(RoundedCornerShape(10.dp))
+                                .clickable { selectedImageUrl = url }
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            /** Agregar nuevas imágenes */
+            Button(onClick = { launcher.launch("image/*") }) {
+                Text("Agregar imágenes")
+            }
+
+            /** Preview nuevas imágenes */
+            if (newImageUris.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(8.dp))
+                LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    items(newImageUris) { uri ->
+                        AsyncImage(
+                            model = uri,
+                            contentDescription = null,
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier
+                                .size(100.dp)
+                                .clip(RoundedCornerShape(10.dp))
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
             Button(
                 onClick = {
                     val updated = PostDto(
@@ -115,12 +198,54 @@ fun EditPostScreen(
                     )
 
                     viewModel.updatePost(postId, updated) {
-                        navController.popBackStack()
+                        if (newImageUris.isNotEmpty()) {
+                            viewModel.addImagesToPost(
+                                postId = postId,
+                                imageUris = newImageUris,
+                                context = context
+                            ) {
+                                navController.popBackStack()
+                            }
+                        } else {
+                            navController.popBackStack()
+                        }
                     }
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Guardar cambios")
+            }
+        }
+    }
+
+    /** Preview fullscreen */
+    selectedImageUrl?.let { imageUrl ->
+        Dialog(onDismissRequest = { selectedImageUrl = null }) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black),
+                contentAlignment = Alignment.Center
+            ) {
+                AsyncImage(
+                    model = imageUrl,
+                    contentDescription = "Preview imagen",
+                    contentScale = ContentScale.Fit,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                IconButton(
+                    onClick = { selectedImageUrl = null },
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(16.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = "Cerrar",
+                        tint = Color.White
+                    )
+                }
             }
         }
     }
