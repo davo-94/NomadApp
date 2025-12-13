@@ -2,7 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    id("org.jetbrains.kotlin.kapt") //Activar kapt
+    id("org.jetbrains.kotlin.kapt")
 }
 
 android {
@@ -28,13 +28,16 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
     kotlinOptions {
         jvmTarget = "11"
     }
+
     buildFeatures {
         compose = true
     }
@@ -50,29 +53,40 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+
     implementation("androidx.compose.foundation:foundation:1.6.0")
     implementation("androidx.datastore:datastore-preferences:1.1.1")
-    // Coil para Jetpack Compose (AsyncImage)
+
+    // Coil (imágenes)
     implementation("io.coil-kt:coil-compose:2.4.0")
-    //Gson
+
+    // Gson
     implementation("com.google.code.gson:gson:2.10.1")
-    //Icons
+
+    // Icons
     implementation("androidx.compose.material:material-icons-extended")
-    // Room (persistencia local)
+
+    // Room
     implementation("androidx.room:room-runtime:2.6.1")
     implementation("androidx.room:room-ktx:2.6.1")
-    //ViewModel + lifecycle
+    kapt("androidx.room:room-compiler:2.6.1")
+
+    // ViewModel + Lifecycle
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.2")
-    //NavController
+
+    // Navigation
     implementation("androidx.navigation:navigation-compose:2.8.3")
-    //Retrofit
+
+    // Retrofit + OkHttp (backend)
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
-    //Converter JSON (Gson)
     implementation("com.squareup.retrofit2:converter-gson:2.11.0")
-    //OkHttp logging
     implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
-    kapt("androidx.room:room-compiler:2.6.1")
+
+    // Coroutines
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -80,5 +94,4 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-
 }

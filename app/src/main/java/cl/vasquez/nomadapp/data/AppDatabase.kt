@@ -11,15 +11,16 @@ import androidx.room.TypeConverters
 import androidx.sqlite.db.SupportSQLiteDatabase
 import androidx.room.migration.Migration
 
-// Version = 4 fuerza la reconstrucción de tablas o migración
-// Se incluyen todas las entidades: Post, Contact y User
-@Database(entities = [Post::class, Contact::class, User::class], version = 4, exportSchema = true)
+// Version = 6 agrega campos a User (username, firstName, lastName, enabled)
+// Se incluyen todas las entidades: Post, Contact, User y AdminUser
+@Database(entities = [Post::class, Contact::class, User::class, AdminUser::class], version = 6, exportSchema = true)
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun postDao(): PostDao
     abstract fun contactDao(): ContactDao
     abstract fun userDao(): UserDao
+    abstract fun adminUserDao(): AdminUserDao
 
     companion object {
         /**
