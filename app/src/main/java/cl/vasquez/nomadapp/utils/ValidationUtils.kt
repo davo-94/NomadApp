@@ -1,7 +1,7 @@
 package cl.vasquez.nomadapp.utils
 
 /**
- * Object que contiene funciones de validación para el formulario de contacto
+ * Object (singleton) que agrupa todas las funciones de validación para formularios utilizados.
  * Adaptado del modelo TiendApp (semana 8)
  */
 
@@ -38,13 +38,6 @@ object ValidationUtils {
             !isValidEmail(email) -> "Correo electrónico inválido"
             else -> null
         }
-    }
-
-    //País
-    fun isValidPais(pais: String): Boolean = pais.isNotBlank()
-
-    fun getPaisErrorMessage(pais: String): String? {
-        return if (pais.isBlank()) "Debe seleccionar un país" else null
     }
 
     //Mensaje

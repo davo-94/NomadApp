@@ -22,16 +22,15 @@ class ContactViewModel(application: Application) : AndroidViewModel(application)
         loadContacts()
     }
     // Validación usando ValidationUtils
-    fun validarContacto(nombre: String, correo: String, pais: String, mensaje: String): Boolean {
+    fun validarContacto(nombre: String, correo: String, mensaje: String): Boolean {
         return ValidationUtils.isValidNombre(nombre) &&
                 ValidationUtils.isValidEmail(correo) &&
-                ValidationUtils.isValidPais(pais) &&
                 ValidationUtils.isValidMensaje(mensaje)
     }
     //Guarda el contacto si pasa las validaciones
     fun addContact(nombre: String, correo: String, pais: String, mensaje: String) {
         viewModelScope.launch {
-            if (validarContacto(nombre, correo, pais, mensaje)) {
+            if (validarContacto(nombre, correo, mensaje)) {
                 repository.insert(
                     Contact(
                         nombre = nombre,

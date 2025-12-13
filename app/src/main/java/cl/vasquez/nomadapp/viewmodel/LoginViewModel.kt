@@ -25,11 +25,20 @@ data class LoginUiState(
     val rememberSession: Boolean = false
 )
 
+/**
+ * LoginViewModel hereda de AndroidViewModel, que da acceso al applicationContext
+ * a través de getApplication.
+ * -> Este ViewModel necesita contexto de la app para inicializar la db.
+ */
 class LoginViewModel(application: Application): AndroidViewModel(application) {
 
+    //Se necesita el contexto de la app para crear la base de datos.
+    //Se crea el UserDao. El ViewModel lo pasa al Repository.
     private val userDao: UserDao = AppDatabase.getDatabase(application).userDao()
     private val repository = LoginRepository(userDao)
 
+    //_uiState -> mutable, solo el ViewModel lo puede cambiar
+    //uiState -> Solo lectra, la Screen lo observa pero no lo puede modificar.
     private val _uiState = MutableStateFlow(LoginUiState())
     val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
     // modo de prueba local (no usa DB)
@@ -37,8 +46,8 @@ class LoginViewModel(application: Application): AndroidViewModel(application) {
 
     // usuarios de prueba en memoria
     private val testUsers = listOf(
-        User(email = "admin@nomadapp.com", password = "123456", role = "admin"),
-        User(email = "user@nomadapp.com", password = "password", role = "guest")
+        User(email = "admin@nomadapp.com", password = "abc1234", role = "admin"),
+        User(email = "user@nomadapp.com", password = "password123", role = "guest")
     )
 
     fun onEmailChange(email: String) {

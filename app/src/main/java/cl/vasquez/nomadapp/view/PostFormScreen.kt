@@ -37,7 +37,11 @@ fun PostFormScreen(
 ) {
     /**
      * Estados locales para los campos del formulario
+     * mutableStateOf -> Son valores locales de la pantalla, no vienen
+     * del ViewModel.
+     * -> Son estados visuales; no datos persistentes.
      */
+
     var title by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
     val date = remember { SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date()) }

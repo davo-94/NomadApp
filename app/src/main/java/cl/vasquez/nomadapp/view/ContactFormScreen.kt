@@ -151,7 +151,6 @@ fun ContactFormScreen(
                     if (viewModel.validarContacto(
                             nombre.text,
                             correo.text,
-                            paisSeleccionado,
                             mensaje.text
                         )
                     ) {
