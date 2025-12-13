@@ -9,7 +9,6 @@ import cl.vasquez.nomadapp.model.LoginResult
 import cl.vasquez.nomadapp.data.User
 import cl.vasquez.nomadapp.data.UserDao
 import cl.vasquez.nomadapp.data.SessionManager
-import cl.vasquez.nomadapp.utils.ValidationUtils
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -59,11 +58,23 @@ class LoginViewModel(application: Application): AndroidViewModel(application) {
     }
 
     private fun validateFields(): Boolean {
-        val emailError = ValidationUtils.getEmailErrorMessage(_uiState.value.email)
-        val passwordError = ValidationUtils.getPasswordErrorMessage(_uiState.value.password)
-
-        _uiState.value = _uiState.value.copy(emailError = emailError, passwordError = passwordError)
-        return emailError == null && passwordError == null
+        var hasError = false
+        
+        if (_uiState.value.email.isBlank()) {
+            _uiState.value = _uiState.value.copy(emailError = "El email no puede estar vacío")
+            hasError = true
+        } else {
+            _uiState.value = _uiState.value.copy(emailError = null)
+        }
+        
+        if (_uiState.value.password.isBlank()) {
+            _uiState.value = _uiState.value.copy(passwordError = "La contraseña no puede estar vacía")
+            hasError = true
+        } else {
+            _uiState.value = _uiState.value.copy(passwordError = null)
+        }
+        
+        return !hasError
     }
 
     fun onLoginClick() {
