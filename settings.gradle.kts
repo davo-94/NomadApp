@@ -21,4 +21,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "NomadApp"
 include(":app")
- 
+include(":backend")

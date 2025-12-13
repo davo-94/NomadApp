@@ -101,7 +101,7 @@ fun RegisterScreen(navController: NavController) {
                     if (email.isBlank()) {
                         emailError = "El email no puede estar vacío"
                         isValid = false
-                    } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                    } else if (!email.contains("@") || !email.contains(".")) {
                         emailError = "Formato de email inválido"
                         isValid = false
                     }
@@ -124,8 +124,9 @@ fun RegisterScreen(navController: NavController) {
                     isLoading = true
                     CoroutineScope(Dispatchers.IO).launch {
                         try {
-                            val dao = AppDatabase.getDatabase(context).userDao()
-                            val existingUser = dao.getByEmail(email)
+                            val db = AppDatabase.getDatabase(context)
+                            val userDao = db.userDao()
+                            val existingUser = userDao.getByEmail(email)
 
                             if (existingUser != null) {
                                 // Ya existe
@@ -133,7 +134,30 @@ fun RegisterScreen(navController: NavController) {
                                 dialogMessage = "El email '$email' ya está asociado a otra cuenta."
                                 showErrorDialog = true
                             } else {
-                                dao.insert(User(email = email, password = password, role = "admin"))
+                                // Extrae nombre y apellido del email
+                                val emailPrefix = email.split("@")[0]
+                                val names = emailPrefix.split(Regex("[._-]"))
+                                val firstName = names.getOrNull(0) ?: emailPrefix
+                                val lastName = names.getOrNull(1) ?: ""
+                                
+                                // Crear usuario con todos los campos
+                                val newUser = User(
+                                    email = email,
+                                    password = password,
+                                    role = "USER",
+                                    username = emailPrefix,
+                                    firstName = firstName.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() },
+                                    lastName = lastName.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() },
+                                    enabled = true
+                                )
+                                
+                                userDao.insert(newUser)
+                                
+                                // Limpia campos después de insertar
+                                email = ""
+                                password = ""
+                                passwordConfirm = ""
+                                
                                 dialogMessage = "¡Registro exitoso! Ahora puedes iniciar sesión."
                                 showSuccessDialog = true
                             }

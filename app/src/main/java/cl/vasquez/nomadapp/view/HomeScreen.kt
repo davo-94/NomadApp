@@ -1,10 +1,12 @@
 package cl.vasquez.nomadapp.view
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -108,6 +110,28 @@ fun HomeScreen(navController: NavController) {
                     text = "Contacto",
                     onClick = { navController.navigate("contact_form") }
                 )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                /**
+                 * Obtener el rol del usuario para mostrar opción de administración
+                 */
+                val userRole = SessionManager.getUserRole().collectAsState(initial = null).value
+                
+                // Log temporal para debugging
+                Log.d("HomeScreen", "userRole = '$userRole'")
+                
+                // Mostrar botón de admin solo si el usuario es administrador
+                // Comparación insensible a mayúsculas porque el rol puede venir como "admin" o "ADMIN"
+                if (userRole?.equals("ADMIN", ignoreCase = true) == true) {
+                    SecondaryButton(
+                        text = "Panel de Administración",
+                        onClick = { navController.navigate("admin_panel") },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 8.dp)
+                    )
+                }
             }
         }
     }

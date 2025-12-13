@@ -24,6 +24,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.CheckCircle
 import cl.vasquez.nomadapp.data.SessionManager
+import cl.vasquez.nomadapp.utils.remotePhotoPickerLauncher
 import kotlinx.coroutines.runBlocking
 import coil.compose.AsyncImage
 
@@ -61,22 +62,8 @@ fun PostFormScreen(
      */
     val context = LocalContext.current
 
-    val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetMultipleContents() // ← selección múltiple
-    ) { uris: List<Uri> ->
-        if (uris.isNotEmpty()) {
-            uris.forEach { uri ->
-                try {
-                    context.contentResolver.takePersistableUriPermission(
-                        uri,
-                        Intent.FLAG_GRANT_READ_URI_PERMISSION
-                    )
-                } catch (e: SecurityException) {
-                    e.printStackTrace()
-                }
-            }
-            imageUris = uris
-        }
+    val openPhotoPickerWithPermission = remotePhotoPickerLauncher { uris ->
+        imageUris = uris
     }
 
     /**
@@ -163,7 +150,7 @@ fun PostFormScreen(
             /**
              * Botón para seleccionar múltiples imágenes desde la galería
              */
-            Button(onClick = { launcher.launch("image/*") }) {
+            Button(onClick = { openPhotoPickerWithPermission() }) {
                 Text("Seleccionar imágenes")
             }
 

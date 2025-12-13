@@ -16,6 +16,7 @@ import cl.vasquez.nomadapp.view.LoginScreen
 import cl.vasquez.nomadapp.view.RegisterScreen
 import cl.vasquez.nomadapp.view.EditPostScreen
 import cl.vasquez.nomadapp.view.GuestPostListScreen
+import cl.vasquez.nomadapp.view.AdminScreen
 import cl.vasquez.nomadapp.data.SessionManager
 
 /**
@@ -96,6 +97,11 @@ fun AppNavigation() {
         // Listado de publicaciones para invitados (solo lectura)
         composable("guest_post_list") {
             GuestPostListScreen(navController = navController)
+        }
+
+        // Panel de administración (solo para admins)
+        composable("admin_panel") {
+            AdminScreen(navController = navController)
         }
     }
 }
