@@ -10,6 +10,7 @@ import androidx.compose.runtime.remember
 
 /**
  * Composable para solicitar permisos de cámara y galería
+ * NOTA: Se recomienda usar PermissionManager para un manejo centralizado de permisos
  */
 @Composable
 fun PermissionRequest(
@@ -37,6 +38,7 @@ fun PermissionRequest(
 
 /**
  * Composable para solicitar múltiples permisos
+ * NOTA: Se recomienda usar PermissionManager para un manejo centralizado de permisos
  */
 @Composable
 fun MultiplePermissionRequest(

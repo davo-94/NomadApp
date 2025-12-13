@@ -25,6 +25,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.CheckCircle
 import cl.vasquez.nomadapp.data.SessionManager
+import cl.vasquez.nomadapp.utils.PermissionManager
 import kotlinx.coroutines.runBlocking
 import coil.compose.AsyncImage
 
@@ -67,7 +68,7 @@ fun PostFormScreen(
      */
     val context = LocalContext.current
 
-    val launcher = rememberLauncherForActivityResult(
+    val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetMultipleContents()
     ) { uris: List<Uri> ->
         if (uris.isNotEmpty()) {
@@ -82,6 +83,16 @@ fun PostFormScreen(
                 }
             }
             imageUris = uris
+        }
+    }
+
+    // Launcher para solicitar permisos de fotos
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        val allGranted = permissions.values.all { it }
+        if (allGranted) {
+            galleryLauncher.launch("image/*")
         }
     }
 
@@ -182,8 +193,19 @@ fun PostFormScreen(
 
             /**
              * Botón para seleccionar múltiples imágenes desde la galería
+             * Solicita permisos de acceso a fotos si es necesario
              */
-            Button(onClick = { launcher.launch("image/*") }) {
+            Button(
+                onClick = {
+                    // Verificar si ya tiene permisos de fotos
+                    if (PermissionManager.hasPhotoPermission(context)) {
+                        galleryLauncher.launch("image/*")
+                    } else {
+                        // Si no tiene permisos, solicitarlos usando PermissionManager
+                        PermissionManager.requestPhotoPermission(permissionLauncher)
+                    }
+                }
+            ) {
                 Text("Seleccionar imágenes")
             }
 

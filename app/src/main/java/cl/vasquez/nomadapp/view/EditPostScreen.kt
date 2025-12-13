@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.lifecycle.viewmodel.compose.viewModel
 import cl.vasquez.nomadapp.viewmodel.PostViewModel
+import cl.vasquez.nomadapp.utils.PermissionManager
 import coil.compose.AsyncImage
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -73,7 +74,7 @@ fun EditPostScreen(
     var selectedImageUrl by remember { mutableStateOf<String?>(null) }
 
     /** Selector de imágenes */
-    val launcher = rememberLauncherForActivityResult(
+    val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetMultipleContents()
     ) { uris ->
         if (uris.isNotEmpty()) {
@@ -86,6 +87,16 @@ fun EditPostScreen(
                 } catch (_: SecurityException) { }
             }
             newImageUris = uris
+        }
+    }
+
+    // Launcher para solicitar permisos de fotos
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        val allGranted = permissions.values.all { it }
+        if (allGranted) {
+            galleryLauncher.launch("image/*")
         }
     }
 
@@ -164,8 +175,18 @@ fun EditPostScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            /** Agregar nuevas imágenes */
-            Button(onClick = { launcher.launch("image/*") }) {
+            /** Agregar nuevas imágenes con solicitud de permisos */
+            Button(
+                onClick = {
+                    // Verificar si ya tiene permisos de fotos
+                    if (PermissionManager.hasPhotoPermission(context)) {
+                        galleryLauncher.launch("image/*")
+                    } else {
+                        // Si no tiene permisos, solicitarlos usando PermissionManager
+                        PermissionManager.requestPhotoPermission(permissionLauncher)
+                    }
+                }
+            ) {
                 Text("Agregar imágenes")
             }
 
