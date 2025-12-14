@@ -148,8 +148,4 @@ Funcional y estable
 
 Probado completamente en entorno local
 
-Listo para evaluación EVA2
 
-## Nota final
-
-* Este proyecto forma parte de la Evaluación Parcial 2 del ramo Desarrollo de Aplicaciones Móviles, siguiendo los criterios de diseño, validación, navegación, almacenamiento local, arquitectura y uso de recursos nativos establecidos por la rúbrica EVA2.
