@@ -28,24 +28,32 @@ import javax.annotation.processing.Generated;
 public final class AppDatabase_Impl extends AppDatabase {
   private volatile PostDao _postDao;
 
+  private volatile ContactDao _contactDao;
+
   private volatile UserDao _userDao;
+
+  private volatile AdminUserDao _adminUserDao;
 
   @Override
   @NonNull
   protected SupportSQLiteOpenHelper createOpenHelper(@NonNull final DatabaseConfiguration config) {
-    final SupportSQLiteOpenHelper.Callback _openCallback = new RoomOpenHelper(config, new RoomOpenHelper.Delegate(2) {
+    final SupportSQLiteOpenHelper.Callback _openCallback = new RoomOpenHelper(config, new RoomOpenHelper.Delegate(6) {
       @Override
       public void createAllTables(@NonNull final SupportSQLiteDatabase db) {
-        db.execSQL("CREATE TABLE IF NOT EXISTS `posts` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `description` TEXT NOT NULL, `date` TEXT NOT NULL, `imageUri` TEXT)");
-        db.execSQL("CREATE TABLE IF NOT EXISTS `users` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `email` TEXT NOT NULL, `password` TEXT NOT NULL, `role` TEXT NOT NULL)");
+        db.execSQL("CREATE TABLE IF NOT EXISTS `posts` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `description` TEXT NOT NULL, `date` TEXT NOT NULL, `imageUris` TEXT NOT NULL)");
+        db.execSQL("CREATE TABLE IF NOT EXISTS `contact_table` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `nombre` TEXT NOT NULL, `correo` TEXT NOT NULL, `pais` TEXT NOT NULL, `mensaje` TEXT NOT NULL)");
+        db.execSQL("CREATE TABLE IF NOT EXISTS `users` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `email` TEXT NOT NULL, `password` TEXT NOT NULL, `role` TEXT NOT NULL, `username` TEXT NOT NULL, `firstName` TEXT NOT NULL, `lastName` TEXT NOT NULL, `enabled` INTEGER NOT NULL)");
+        db.execSQL("CREATE TABLE IF NOT EXISTS `admin_users` (`id` INTEGER NOT NULL, `username` TEXT NOT NULL, `email` TEXT NOT NULL, `firstName` TEXT NOT NULL, `lastName` TEXT NOT NULL, `roles` TEXT NOT NULL, `enabled` INTEGER NOT NULL, `syncPending` INTEGER NOT NULL, PRIMARY KEY(`id`))");
         db.execSQL("CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)");
-        db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '8f7dfc44defb9bd2bd929cce7c71f1c0')");
+        db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '2192704f1ba91e1c4e78fb595b0a5a02')");
       }
 
       @Override
       public void dropAllTables(@NonNull final SupportSQLiteDatabase db) {
         db.execSQL("DROP TABLE IF EXISTS `posts`");
+        db.execSQL("DROP TABLE IF EXISTS `contact_table`");
         db.execSQL("DROP TABLE IF EXISTS `users`");
+        db.execSQL("DROP TABLE IF EXISTS `admin_users`");
         final List<? extends RoomDatabase.Callback> _callbacks = mCallbacks;
         if (_callbacks != null) {
           for (RoomDatabase.Callback _callback : _callbacks) {
@@ -94,7 +102,7 @@ public final class AppDatabase_Impl extends AppDatabase {
         _columnsPosts.put("title", new TableInfo.Column("title", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsPosts.put("description", new TableInfo.Column("description", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsPosts.put("date", new TableInfo.Column("date", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
-        _columnsPosts.put("imageUri", new TableInfo.Column("imageUri", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsPosts.put("imageUris", new TableInfo.Column("imageUris", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         final HashSet<TableInfo.ForeignKey> _foreignKeysPosts = new HashSet<TableInfo.ForeignKey>(0);
         final HashSet<TableInfo.Index> _indicesPosts = new HashSet<TableInfo.Index>(0);
         final TableInfo _infoPosts = new TableInfo("posts", _columnsPosts, _foreignKeysPosts, _indicesPosts);
@@ -104,11 +112,30 @@ public final class AppDatabase_Impl extends AppDatabase {
                   + " Expected:\n" + _infoPosts + "\n"
                   + " Found:\n" + _existingPosts);
         }
-        final HashMap<String, TableInfo.Column> _columnsUsers = new HashMap<String, TableInfo.Column>(4);
+        final HashMap<String, TableInfo.Column> _columnsContactTable = new HashMap<String, TableInfo.Column>(5);
+        _columnsContactTable.put("id", new TableInfo.Column("id", "INTEGER", true, 1, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsContactTable.put("nombre", new TableInfo.Column("nombre", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsContactTable.put("correo", new TableInfo.Column("correo", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsContactTable.put("pais", new TableInfo.Column("pais", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsContactTable.put("mensaje", new TableInfo.Column("mensaje", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        final HashSet<TableInfo.ForeignKey> _foreignKeysContactTable = new HashSet<TableInfo.ForeignKey>(0);
+        final HashSet<TableInfo.Index> _indicesContactTable = new HashSet<TableInfo.Index>(0);
+        final TableInfo _infoContactTable = new TableInfo("contact_table", _columnsContactTable, _foreignKeysContactTable, _indicesContactTable);
+        final TableInfo _existingContactTable = TableInfo.read(db, "contact_table");
+        if (!_infoContactTable.equals(_existingContactTable)) {
+          return new RoomOpenHelper.ValidationResult(false, "contact_table(cl.vasquez.nomadapp.data.Contact).\n"
+                  + " Expected:\n" + _infoContactTable + "\n"
+                  + " Found:\n" + _existingContactTable);
+        }
+        final HashMap<String, TableInfo.Column> _columnsUsers = new HashMap<String, TableInfo.Column>(8);
         _columnsUsers.put("id", new TableInfo.Column("id", "INTEGER", true, 1, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsUsers.put("email", new TableInfo.Column("email", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsUsers.put("password", new TableInfo.Column("password", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsUsers.put("role", new TableInfo.Column("role", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsUsers.put("username", new TableInfo.Column("username", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsUsers.put("firstName", new TableInfo.Column("firstName", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsUsers.put("lastName", new TableInfo.Column("lastName", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsUsers.put("enabled", new TableInfo.Column("enabled", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         final HashSet<TableInfo.ForeignKey> _foreignKeysUsers = new HashSet<TableInfo.ForeignKey>(0);
         final HashSet<TableInfo.Index> _indicesUsers = new HashSet<TableInfo.Index>(0);
         final TableInfo _infoUsers = new TableInfo("users", _columnsUsers, _foreignKeysUsers, _indicesUsers);
@@ -118,9 +145,27 @@ public final class AppDatabase_Impl extends AppDatabase {
                   + " Expected:\n" + _infoUsers + "\n"
                   + " Found:\n" + _existingUsers);
         }
+        final HashMap<String, TableInfo.Column> _columnsAdminUsers = new HashMap<String, TableInfo.Column>(8);
+        _columnsAdminUsers.put("id", new TableInfo.Column("id", "INTEGER", true, 1, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsAdminUsers.put("username", new TableInfo.Column("username", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsAdminUsers.put("email", new TableInfo.Column("email", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsAdminUsers.put("firstName", new TableInfo.Column("firstName", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsAdminUsers.put("lastName", new TableInfo.Column("lastName", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsAdminUsers.put("roles", new TableInfo.Column("roles", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsAdminUsers.put("enabled", new TableInfo.Column("enabled", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsAdminUsers.put("syncPending", new TableInfo.Column("syncPending", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        final HashSet<TableInfo.ForeignKey> _foreignKeysAdminUsers = new HashSet<TableInfo.ForeignKey>(0);
+        final HashSet<TableInfo.Index> _indicesAdminUsers = new HashSet<TableInfo.Index>(0);
+        final TableInfo _infoAdminUsers = new TableInfo("admin_users", _columnsAdminUsers, _foreignKeysAdminUsers, _indicesAdminUsers);
+        final TableInfo _existingAdminUsers = TableInfo.read(db, "admin_users");
+        if (!_infoAdminUsers.equals(_existingAdminUsers)) {
+          return new RoomOpenHelper.ValidationResult(false, "admin_users(cl.vasquez.nomadapp.data.AdminUser).\n"
+                  + " Expected:\n" + _infoAdminUsers + "\n"
+                  + " Found:\n" + _existingAdminUsers);
+        }
         return new RoomOpenHelper.ValidationResult(true, null);
       }
-    }, "8f7dfc44defb9bd2bd929cce7c71f1c0", "ec3d7eead90a5481a38d0d7d15ec1321");
+    }, "2192704f1ba91e1c4e78fb595b0a5a02", "4010858b8315af00838efa6e532578c1");
     final SupportSQLiteOpenHelper.Configuration _sqliteConfig = SupportSQLiteOpenHelper.Configuration.builder(config.context).name(config.name).callback(_openCallback).build();
     final SupportSQLiteOpenHelper _helper = config.sqliteOpenHelperFactory.create(_sqliteConfig);
     return _helper;
@@ -131,7 +176,7 @@ public final class AppDatabase_Impl extends AppDatabase {
   protected InvalidationTracker createInvalidationTracker() {
     final HashMap<String, String> _shadowTablesMap = new HashMap<String, String>(0);
     final HashMap<String, Set<String>> _viewTables = new HashMap<String, Set<String>>(0);
-    return new InvalidationTracker(this, _shadowTablesMap, _viewTables, "posts","users");
+    return new InvalidationTracker(this, _shadowTablesMap, _viewTables, "posts","contact_table","users","admin_users");
   }
 
   @Override
@@ -141,7 +186,9 @@ public final class AppDatabase_Impl extends AppDatabase {
     try {
       super.beginTransaction();
       _db.execSQL("DELETE FROM `posts`");
+      _db.execSQL("DELETE FROM `contact_table`");
       _db.execSQL("DELETE FROM `users`");
+      _db.execSQL("DELETE FROM `admin_users`");
       super.setTransactionSuccessful();
     } finally {
       super.endTransaction();
@@ -157,7 +204,9 @@ public final class AppDatabase_Impl extends AppDatabase {
   protected Map<Class<?>, List<Class<?>>> getRequiredTypeConverters() {
     final HashMap<Class<?>, List<Class<?>>> _typeConvertersMap = new HashMap<Class<?>, List<Class<?>>>();
     _typeConvertersMap.put(PostDao.class, PostDao_Impl.getRequiredConverters());
+    _typeConvertersMap.put(ContactDao.class, ContactDao_Impl.getRequiredConverters());
     _typeConvertersMap.put(UserDao.class, UserDao_Impl.getRequiredConverters());
+    _typeConvertersMap.put(AdminUserDao.class, AdminUserDao_Impl.getRequiredConverters());
     return _typeConvertersMap;
   }
 
@@ -191,6 +240,20 @@ public final class AppDatabase_Impl extends AppDatabase {
   }
 
   @Override
+  public ContactDao contactDao() {
+    if (_contactDao != null) {
+      return _contactDao;
+    } else {
+      synchronized(this) {
+        if(_contactDao == null) {
+          _contactDao = new ContactDao_Impl(this);
+        }
+        return _contactDao;
+      }
+    }
+  }
+
+  @Override
   public UserDao userDao() {
     if (_userDao != null) {
       return _userDao;
@@ -200,6 +263,20 @@ public final class AppDatabase_Impl extends AppDatabase {
           _userDao = new UserDao_Impl(this);
         }
         return _userDao;
+      }
+    }
+  }
+
+  @Override
+  public AdminUserDao adminUserDao() {
+    if (_adminUserDao != null) {
+      return _adminUserDao;
+    } else {
+      synchronized(this) {
+        if(_adminUserDao == null) {
+          _adminUserDao = new AdminUserDao_Impl(this);
+        }
+        return _adminUserDao;
       }
     }
   }

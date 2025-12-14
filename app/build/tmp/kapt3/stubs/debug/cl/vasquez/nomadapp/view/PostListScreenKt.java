@@ -4,7 +4,8 @@ package cl.vasquez.nomadapp.view;
 public final class PostListScreenKt {
     
     /**
-     * Pantalla que muestra la lista de publicaciones guardadas
+     * Pantalla que muestra la lista de publicaciones (admin)
+     * Consume backend y permite editar / eliminar.
      */
     @kotlin.OptIn(markerClass = {androidx.compose.material3.ExperimentalMaterial3Api.class})
     @androidx.compose.runtime.Composable()

@@ -4,8 +4,7 @@ package cl.vasquez.nomadapp.navigation;
 public final class AppNavigationKt {
     
     /**
-     * Composable principal que define las rutas de navegación de la app
-     * Composable le indica a Kotlin que esa función dibuja UI en pantalla.
+     * Composable principal que define las rutas de navegación de la app.
      */
     @androidx.compose.runtime.Composable()
     public static final void AppNavigation() {

@@ -18,134 +18,147 @@
 15-->C:\Users\Nicolas\OneDrive\Documentos\GitHub\NomadApp\app\src\main\AndroidManifest.xml:9:5-80
 15-->C:\Users\Nicolas\OneDrive\Documentos\GitHub\NomadApp\app\src\main\AndroidManifest.xml:9:22-77
 16
-17    <permission
-17-->[androidx.core:core:1.17.0] C:\Users\Nicolas\.gradle\caches\8.13\transforms\530418daaab0fcf4005bd3c788e08fb0\transformed\core-1.17.0\AndroidManifest.xml:22:5-24:47
-18        android:name="cl.vasquez.nomadapp.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
-18-->[androidx.core:core:1.17.0] C:\Users\Nicolas\.gradle\caches\8.13\transforms\530418daaab0fcf4005bd3c788e08fb0\transformed\core-1.17.0\AndroidManifest.xml:23:9-81
-19        android:protectionLevel="signature" />
-19-->[androidx.core:core:1.17.0] C:\Users\Nicolas\.gradle\caches\8.13\transforms\530418daaab0fcf4005bd3c788e08fb0\transformed\core-1.17.0\AndroidManifest.xml:24:9-44
-20
-21    <uses-permission android:name="cl.vasquez.nomadapp.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
-21-->[androidx.core:core:1.17.0] C:\Users\Nicolas\.gradle\caches\8.13\transforms\530418daaab0fcf4005bd3c788e08fb0\transformed\core-1.17.0\AndroidManifest.xml:26:5-97
-21-->[androidx.core:core:1.17.0] C:\Users\Nicolas\.gradle\caches\8.13\transforms\530418daaab0fcf4005bd3c788e08fb0\transformed\core-1.17.0\AndroidManifest.xml:26:22-94
-22
-23    <application
-23-->C:\Users\Nicolas\OneDrive\Documentos\GitHub\NomadApp\app\src\main\AndroidManifest.xml:11:5-32:19
-24        android:allowBackup="true"
-24-->C:\Users\Nicolas\OneDrive\Documentos\GitHub\NomadApp\app\src\main\AndroidManifest.xml:12:9-35
-25        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
-25-->[androidx.core:core:1.17.0] C:\Users\Nicolas\.gradle\caches\8.13\transforms\530418daaab0fcf4005bd3c788e08fb0\transformed\core-1.17.0\AndroidManifest.xml:28:18-86
-26        android:dataExtractionRules="@xml/data_extraction_rules"
-26-->C:\Users\Nicolas\OneDrive\Documentos\GitHub\NomadApp\app\src\main\AndroidManifest.xml:13:9-65
-27        android:extractNativeLibs="false"
-28        android:fullBackupContent="@xml/backup_rules"
-28-->C:\Users\Nicolas\OneDrive\Documentos\GitHub\NomadApp\app\src\main\AndroidManifest.xml:14:9-54
-29        android:icon="@mipmap/ic_launcher"
-29-->C:\Users\Nicolas\OneDrive\Documentos\GitHub\NomadApp\app\src\main\AndroidManifest.xml:15:9-43
-30        android:label="@string/app_name"
-30-->C:\Users\Nicolas\OneDrive\Documentos\GitHub\NomadApp\app\src\main\AndroidManifest.xml:16:9-41
-31        android:roundIcon="@mipmap/ic_launcher_round"
-31-->C:\Users\Nicolas\OneDrive\Documentos\GitHub\NomadApp\app\src\main\AndroidManifest.xml:17:9-54
-32        android:supportsRtl="true"
-32-->C:\Users\Nicolas\OneDrive\Documentos\GitHub\NomadApp\app\src\main\AndroidManifest.xml:18:9-35
-33        android:theme="@style/Theme.NomadApp" >
-33-->C:\Users\Nicolas\OneDrive\Documentos\GitHub\NomadApp\app\src\main\AndroidManifest.xml:19:9-46
-34        <activity
-34-->C:\Users\Nicolas\OneDrive\Documentos\GitHub\NomadApp\app\src\main\AndroidManifest.xml:21:9-31:20
-35            android:name="cl.vasquez.nomadapp.MainActivity"
-35-->C:\Users\Nicolas\OneDrive\Documentos\GitHub\NomadApp\app\src\main\AndroidManifest.xml:22:13-41
-36            android:exported="true"
-36-->C:\Users\Nicolas\OneDrive\Documentos\GitHub\NomadApp\app\src\main\AndroidManifest.xml:23:13-36
-37            android:label="@string/app_name"
-37-->C:\Users\Nicolas\OneDrive\Documentos\GitHub\NomadApp\app\src\main\AndroidManifest.xml:24:13-45
-38            android:theme="@style/Theme.NomadApp" >
-38-->C:\Users\Nicolas\OneDrive\Documentos\GitHub\NomadApp\app\src\main\AndroidManifest.xml:25:13-50
-39            <intent-filter>
-39-->C:\Users\Nicolas\OneDrive\Documentos\GitHub\NomadApp\app\src\main\AndroidManifest.xml:26:13-30:29
-40                <action android:name="android.intent.action.MAIN" />
-40-->C:\Users\Nicolas\OneDrive\Documentos\GitHub\NomadApp\app\src\main\AndroidManifest.xml:27:17-69
-40-->C:\Users\Nicolas\OneDrive\Documentos\GitHub\NomadApp\app\src\main\AndroidManifest.xml:27:25-66
-41
-42                <category android:name="android.intent.category.LAUNCHER" />
-42-->C:\Users\Nicolas\OneDrive\Documentos\GitHub\NomadApp\app\src\main\AndroidManifest.xml:29:17-77
-42-->C:\Users\Nicolas\OneDrive\Documentos\GitHub\NomadApp\app\src\main\AndroidManifest.xml:29:27-74
-43            </intent-filter>
-44        </activity>
-45
-46        <provider
-46-->[androidx.emoji2:emoji2:1.4.0] C:\Users\Nicolas\.gradle\caches\8.13\transforms\03dfc7ef4aea058e8d3f4dcecdaa1f32\transformed\emoji2-1.4.0\AndroidManifest.xml:24:9-32:20
-47            android:name="androidx.startup.InitializationProvider"
-47-->[androidx.emoji2:emoji2:1.4.0] C:\Users\Nicolas\.gradle\caches\8.13\transforms\03dfc7ef4aea058e8d3f4dcecdaa1f32\transformed\emoji2-1.4.0\AndroidManifest.xml:25:13-67
-48            android:authorities="cl.vasquez.nomadapp.androidx-startup"
-48-->[androidx.emoji2:emoji2:1.4.0] C:\Users\Nicolas\.gradle\caches\8.13\transforms\03dfc7ef4aea058e8d3f4dcecdaa1f32\transformed\emoji2-1.4.0\AndroidManifest.xml:26:13-68
-49            android:exported="false" >
-49-->[androidx.emoji2:emoji2:1.4.0] C:\Users\Nicolas\.gradle\caches\8.13\transforms\03dfc7ef4aea058e8d3f4dcecdaa1f32\transformed\emoji2-1.4.0\AndroidManifest.xml:27:13-37
-50            <meta-data
-50-->[androidx.emoji2:emoji2:1.4.0] C:\Users\Nicolas\.gradle\caches\8.13\transforms\03dfc7ef4aea058e8d3f4dcecdaa1f32\transformed\emoji2-1.4.0\AndroidManifest.xml:29:13-31:52
-51                android:name="androidx.emoji2.text.EmojiCompatInitializer"
-51-->[androidx.emoji2:emoji2:1.4.0] C:\Users\Nicolas\.gradle\caches\8.13\transforms\03dfc7ef4aea058e8d3f4dcecdaa1f32\transformed\emoji2-1.4.0\AndroidManifest.xml:30:17-75
-52                android:value="androidx.startup" />
-52-->[androidx.emoji2:emoji2:1.4.0] C:\Users\Nicolas\.gradle\caches\8.13\transforms\03dfc7ef4aea058e8d3f4dcecdaa1f32\transformed\emoji2-1.4.0\AndroidManifest.xml:31:17-49
-53            <meta-data
-53-->[androidx.lifecycle:lifecycle-process:2.9.4] C:\Users\Nicolas\.gradle\caches\8.13\transforms\e0003f9accff73a3b332903eca6da993\transformed\lifecycle-process-2.9.4\AndroidManifest.xml:29:13-31:52
-54                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
-54-->[androidx.lifecycle:lifecycle-process:2.9.4] C:\Users\Nicolas\.gradle\caches\8.13\transforms\e0003f9accff73a3b332903eca6da993\transformed\lifecycle-process-2.9.4\AndroidManifest.xml:30:17-78
-55                android:value="androidx.startup" />
-55-->[androidx.lifecycle:lifecycle-process:2.9.4] C:\Users\Nicolas\.gradle\caches\8.13\transforms\e0003f9accff73a3b332903eca6da993\transformed\lifecycle-process-2.9.4\AndroidManifest.xml:31:17-49
+17    <!-- Permisos para acceder a cámara y micrófono -->
+18    <uses-permission android:name="android.permission.CAMERA" />
+18-->C:\Users\Nicolas\OneDrive\Documentos\GitHub\NomadApp\app\src\main\AndroidManifest.xml:12:5-65
+18-->C:\Users\Nicolas\OneDrive\Documentos\GitHub\NomadApp\app\src\main\AndroidManifest.xml:12:22-62
+19    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+19-->C:\Users\Nicolas\OneDrive\Documentos\GitHub\NomadApp\app\src\main\AndroidManifest.xml:13:5-81
+19-->C:\Users\Nicolas\OneDrive\Documentos\GitHub\NomadApp\app\src\main\AndroidManifest.xml:13:22-78
+20    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+20-->C:\Users\Nicolas\OneDrive\Documentos\GitHub\NomadApp\app\src\main\AndroidManifest.xml:14:5-76
+20-->C:\Users\Nicolas\OneDrive\Documentos\GitHub\NomadApp\app\src\main\AndroidManifest.xml:14:22-73
+21
+22    <permission
+22-->[androidx.core:core:1.17.0] C:\Users\Nicolas\.gradle\caches\8.13\transforms\194d74923ccf9b34f2d7cfabbdc32673\transformed\core-1.17.0\AndroidManifest.xml:22:5-24:47
+23        android:name="cl.vasquez.nomadapp.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+23-->[androidx.core:core:1.17.0] C:\Users\Nicolas\.gradle\caches\8.13\transforms\194d74923ccf9b34f2d7cfabbdc32673\transformed\core-1.17.0\AndroidManifest.xml:23:9-81
+24        android:protectionLevel="signature" />
+24-->[androidx.core:core:1.17.0] C:\Users\Nicolas\.gradle\caches\8.13\transforms\194d74923ccf9b34f2d7cfabbdc32673\transformed\core-1.17.0\AndroidManifest.xml:24:9-44
+25
+26    <uses-permission android:name="cl.vasquez.nomadapp.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+26-->[androidx.core:core:1.17.0] C:\Users\Nicolas\.gradle\caches\8.13\transforms\194d74923ccf9b34f2d7cfabbdc32673\transformed\core-1.17.0\AndroidManifest.xml:26:5-97
+26-->[androidx.core:core:1.17.0] C:\Users\Nicolas\.gradle\caches\8.13\transforms\194d74923ccf9b34f2d7cfabbdc32673\transformed\core-1.17.0\AndroidManifest.xml:26:22-94
+27
+28    <application
+28-->C:\Users\Nicolas\OneDrive\Documentos\GitHub\NomadApp\app\src\main\AndroidManifest.xml:16:5-38:19
+29        android:allowBackup="true"
+29-->C:\Users\Nicolas\OneDrive\Documentos\GitHub\NomadApp\app\src\main\AndroidManifest.xml:17:9-35
+30        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+30-->[androidx.core:core:1.17.0] C:\Users\Nicolas\.gradle\caches\8.13\transforms\194d74923ccf9b34f2d7cfabbdc32673\transformed\core-1.17.0\AndroidManifest.xml:28:18-86
+31        android:dataExtractionRules="@xml/data_extraction_rules"
+31-->C:\Users\Nicolas\OneDrive\Documentos\GitHub\NomadApp\app\src\main\AndroidManifest.xml:18:9-65
+32        android:extractNativeLibs="false"
+33        android:fullBackupContent="@xml/backup_rules"
+33-->C:\Users\Nicolas\OneDrive\Documentos\GitHub\NomadApp\app\src\main\AndroidManifest.xml:19:9-54
+34        android:icon="@mipmap/ic_launcher"
+34-->C:\Users\Nicolas\OneDrive\Documentos\GitHub\NomadApp\app\src\main\AndroidManifest.xml:20:9-43
+35        android:label="@string/app_name"
+35-->C:\Users\Nicolas\OneDrive\Documentos\GitHub\NomadApp\app\src\main\AndroidManifest.xml:21:9-41
+36        android:networkSecurityConfig="@xml/network_security_config"
+36-->C:\Users\Nicolas\OneDrive\Documentos\GitHub\NomadApp\app\src\main\AndroidManifest.xml:25:9-69
+37        android:roundIcon="@mipmap/ic_launcher_round"
+37-->C:\Users\Nicolas\OneDrive\Documentos\GitHub\NomadApp\app\src\main\AndroidManifest.xml:22:9-54
+38        android:supportsRtl="true"
+38-->C:\Users\Nicolas\OneDrive\Documentos\GitHub\NomadApp\app\src\main\AndroidManifest.xml:23:9-35
+39        android:theme="@style/Theme.NomadApp" >
+39-->C:\Users\Nicolas\OneDrive\Documentos\GitHub\NomadApp\app\src\main\AndroidManifest.xml:24:9-46
+40        <activity
+40-->C:\Users\Nicolas\OneDrive\Documentos\GitHub\NomadApp\app\src\main\AndroidManifest.xml:27:9-37:20
+41            android:name="cl.vasquez.nomadapp.MainActivity"
+41-->C:\Users\Nicolas\OneDrive\Documentos\GitHub\NomadApp\app\src\main\AndroidManifest.xml:28:13-41
+42            android:exported="true"
+42-->C:\Users\Nicolas\OneDrive\Documentos\GitHub\NomadApp\app\src\main\AndroidManifest.xml:29:13-36
+43            android:label="@string/app_name"
+43-->C:\Users\Nicolas\OneDrive\Documentos\GitHub\NomadApp\app\src\main\AndroidManifest.xml:30:13-45
+44            android:theme="@style/Theme.NomadApp" >
+44-->C:\Users\Nicolas\OneDrive\Documentos\GitHub\NomadApp\app\src\main\AndroidManifest.xml:31:13-50
+45            <intent-filter>
+45-->C:\Users\Nicolas\OneDrive\Documentos\GitHub\NomadApp\app\src\main\AndroidManifest.xml:32:13-36:29
+46                <action android:name="android.intent.action.MAIN" />
+46-->C:\Users\Nicolas\OneDrive\Documentos\GitHub\NomadApp\app\src\main\AndroidManifest.xml:33:17-69
+46-->C:\Users\Nicolas\OneDrive\Documentos\GitHub\NomadApp\app\src\main\AndroidManifest.xml:33:25-66
+47
+48                <category android:name="android.intent.category.LAUNCHER" />
+48-->C:\Users\Nicolas\OneDrive\Documentos\GitHub\NomadApp\app\src\main\AndroidManifest.xml:35:17-77
+48-->C:\Users\Nicolas\OneDrive\Documentos\GitHub\NomadApp\app\src\main\AndroidManifest.xml:35:27-74
+49            </intent-filter>
+50        </activity>
+51
+52        <provider
+52-->[androidx.emoji2:emoji2:1.4.0] C:\Users\Nicolas\.gradle\caches\8.13\transforms\eda074284a9c0da46069bd0d0dd09dda\transformed\emoji2-1.4.0\AndroidManifest.xml:24:9-32:20
+53            android:name="androidx.startup.InitializationProvider"
+53-->[androidx.emoji2:emoji2:1.4.0] C:\Users\Nicolas\.gradle\caches\8.13\transforms\eda074284a9c0da46069bd0d0dd09dda\transformed\emoji2-1.4.0\AndroidManifest.xml:25:13-67
+54            android:authorities="cl.vasquez.nomadapp.androidx-startup"
+54-->[androidx.emoji2:emoji2:1.4.0] C:\Users\Nicolas\.gradle\caches\8.13\transforms\eda074284a9c0da46069bd0d0dd09dda\transformed\emoji2-1.4.0\AndroidManifest.xml:26:13-68
+55            android:exported="false" >
+55-->[androidx.emoji2:emoji2:1.4.0] C:\Users\Nicolas\.gradle\caches\8.13\transforms\eda074284a9c0da46069bd0d0dd09dda\transformed\emoji2-1.4.0\AndroidManifest.xml:27:13-37
 56            <meta-data
-56-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Nicolas\.gradle\caches\8.13\transforms\e9c16bd6cda757df6da4f791ea967460\transformed\profileinstaller-1.4.0\AndroidManifest.xml:29:13-31:52
-57                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
-57-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Nicolas\.gradle\caches\8.13\transforms\e9c16bd6cda757df6da4f791ea967460\transformed\profileinstaller-1.4.0\AndroidManifest.xml:30:17-85
+56-->[androidx.emoji2:emoji2:1.4.0] C:\Users\Nicolas\.gradle\caches\8.13\transforms\eda074284a9c0da46069bd0d0dd09dda\transformed\emoji2-1.4.0\AndroidManifest.xml:29:13-31:52
+57                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+57-->[androidx.emoji2:emoji2:1.4.0] C:\Users\Nicolas\.gradle\caches\8.13\transforms\eda074284a9c0da46069bd0d0dd09dda\transformed\emoji2-1.4.0\AndroidManifest.xml:30:17-75
 58                android:value="androidx.startup" />
-58-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Nicolas\.gradle\caches\8.13\transforms\e9c16bd6cda757df6da4f791ea967460\transformed\profileinstaller-1.4.0\AndroidManifest.xml:31:17-49
-59        </provider>
-60
-61        <service
-61-->[androidx.room:room-runtime:2.6.1] C:\Users\Nicolas\.gradle\caches\8.13\transforms\04d8074e3932e94de41629e0ba363d6a\transformed\room-runtime-2.6.1\AndroidManifest.xml:24:9-28:63
-62            android:name="androidx.room.MultiInstanceInvalidationService"
-62-->[androidx.room:room-runtime:2.6.1] C:\Users\Nicolas\.gradle\caches\8.13\transforms\04d8074e3932e94de41629e0ba363d6a\transformed\room-runtime-2.6.1\AndroidManifest.xml:25:13-74
-63            android:directBootAware="true"
-63-->[androidx.room:room-runtime:2.6.1] C:\Users\Nicolas\.gradle\caches\8.13\transforms\04d8074e3932e94de41629e0ba363d6a\transformed\room-runtime-2.6.1\AndroidManifest.xml:26:13-43
-64            android:exported="false" />
-64-->[androidx.room:room-runtime:2.6.1] C:\Users\Nicolas\.gradle\caches\8.13\transforms\04d8074e3932e94de41629e0ba363d6a\transformed\room-runtime-2.6.1\AndroidManifest.xml:27:13-37
-65
-66        <receiver
-66-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Nicolas\.gradle\caches\8.13\transforms\e9c16bd6cda757df6da4f791ea967460\transformed\profileinstaller-1.4.0\AndroidManifest.xml:34:9-52:20
-67            android:name="androidx.profileinstaller.ProfileInstallReceiver"
-67-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Nicolas\.gradle\caches\8.13\transforms\e9c16bd6cda757df6da4f791ea967460\transformed\profileinstaller-1.4.0\AndroidManifest.xml:35:13-76
-68            android:directBootAware="false"
-68-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Nicolas\.gradle\caches\8.13\transforms\e9c16bd6cda757df6da4f791ea967460\transformed\profileinstaller-1.4.0\AndroidManifest.xml:36:13-44
-69            android:enabled="true"
-69-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Nicolas\.gradle\caches\8.13\transforms\e9c16bd6cda757df6da4f791ea967460\transformed\profileinstaller-1.4.0\AndroidManifest.xml:37:13-35
-70            android:exported="true"
-70-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Nicolas\.gradle\caches\8.13\transforms\e9c16bd6cda757df6da4f791ea967460\transformed\profileinstaller-1.4.0\AndroidManifest.xml:38:13-36
-71            android:permission="android.permission.DUMP" >
-71-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Nicolas\.gradle\caches\8.13\transforms\e9c16bd6cda757df6da4f791ea967460\transformed\profileinstaller-1.4.0\AndroidManifest.xml:39:13-57
-72            <intent-filter>
-72-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Nicolas\.gradle\caches\8.13\transforms\e9c16bd6cda757df6da4f791ea967460\transformed\profileinstaller-1.4.0\AndroidManifest.xml:40:13-42:29
-73                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
-73-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Nicolas\.gradle\caches\8.13\transforms\e9c16bd6cda757df6da4f791ea967460\transformed\profileinstaller-1.4.0\AndroidManifest.xml:41:17-91
-73-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Nicolas\.gradle\caches\8.13\transforms\e9c16bd6cda757df6da4f791ea967460\transformed\profileinstaller-1.4.0\AndroidManifest.xml:41:25-88
-74            </intent-filter>
-75            <intent-filter>
-75-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Nicolas\.gradle\caches\8.13\transforms\e9c16bd6cda757df6da4f791ea967460\transformed\profileinstaller-1.4.0\AndroidManifest.xml:43:13-45:29
-76                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
-76-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Nicolas\.gradle\caches\8.13\transforms\e9c16bd6cda757df6da4f791ea967460\transformed\profileinstaller-1.4.0\AndroidManifest.xml:44:17-85
-76-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Nicolas\.gradle\caches\8.13\transforms\e9c16bd6cda757df6da4f791ea967460\transformed\profileinstaller-1.4.0\AndroidManifest.xml:44:25-82
-77            </intent-filter>
+58-->[androidx.emoji2:emoji2:1.4.0] C:\Users\Nicolas\.gradle\caches\8.13\transforms\eda074284a9c0da46069bd0d0dd09dda\transformed\emoji2-1.4.0\AndroidManifest.xml:31:17-49
+59            <meta-data
+59-->[androidx.lifecycle:lifecycle-process:2.9.4] C:\Users\Nicolas\.gradle\caches\8.13\transforms\ceef89e7d58999562a32a06e51a73a9d\transformed\lifecycle-process-2.9.4\AndroidManifest.xml:29:13-31:52
+60                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+60-->[androidx.lifecycle:lifecycle-process:2.9.4] C:\Users\Nicolas\.gradle\caches\8.13\transforms\ceef89e7d58999562a32a06e51a73a9d\transformed\lifecycle-process-2.9.4\AndroidManifest.xml:30:17-78
+61                android:value="androidx.startup" />
+61-->[androidx.lifecycle:lifecycle-process:2.9.4] C:\Users\Nicolas\.gradle\caches\8.13\transforms\ceef89e7d58999562a32a06e51a73a9d\transformed\lifecycle-process-2.9.4\AndroidManifest.xml:31:17-49
+62            <meta-data
+62-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Nicolas\.gradle\caches\8.13\transforms\27c724a203cfbea70503ea4ab40bad74\transformed\profileinstaller-1.4.0\AndroidManifest.xml:29:13-31:52
+63                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+63-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Nicolas\.gradle\caches\8.13\transforms\27c724a203cfbea70503ea4ab40bad74\transformed\profileinstaller-1.4.0\AndroidManifest.xml:30:17-85
+64                android:value="androidx.startup" />
+64-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Nicolas\.gradle\caches\8.13\transforms\27c724a203cfbea70503ea4ab40bad74\transformed\profileinstaller-1.4.0\AndroidManifest.xml:31:17-49
+65        </provider>
+66
+67        <service
+67-->[androidx.room:room-runtime:2.6.1] C:\Users\Nicolas\.gradle\caches\8.13\transforms\eedd474132e825af6be7bbcc74be34cb\transformed\room-runtime-2.6.1\AndroidManifest.xml:24:9-28:63
+68            android:name="androidx.room.MultiInstanceInvalidationService"
+68-->[androidx.room:room-runtime:2.6.1] C:\Users\Nicolas\.gradle\caches\8.13\transforms\eedd474132e825af6be7bbcc74be34cb\transformed\room-runtime-2.6.1\AndroidManifest.xml:25:13-74
+69            android:directBootAware="true"
+69-->[androidx.room:room-runtime:2.6.1] C:\Users\Nicolas\.gradle\caches\8.13\transforms\eedd474132e825af6be7bbcc74be34cb\transformed\room-runtime-2.6.1\AndroidManifest.xml:26:13-43
+70            android:exported="false" />
+70-->[androidx.room:room-runtime:2.6.1] C:\Users\Nicolas\.gradle\caches\8.13\transforms\eedd474132e825af6be7bbcc74be34cb\transformed\room-runtime-2.6.1\AndroidManifest.xml:27:13-37
+71
+72        <receiver
+72-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Nicolas\.gradle\caches\8.13\transforms\27c724a203cfbea70503ea4ab40bad74\transformed\profileinstaller-1.4.0\AndroidManifest.xml:34:9-52:20
+73            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+73-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Nicolas\.gradle\caches\8.13\transforms\27c724a203cfbea70503ea4ab40bad74\transformed\profileinstaller-1.4.0\AndroidManifest.xml:35:13-76
+74            android:directBootAware="false"
+74-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Nicolas\.gradle\caches\8.13\transforms\27c724a203cfbea70503ea4ab40bad74\transformed\profileinstaller-1.4.0\AndroidManifest.xml:36:13-44
+75            android:enabled="true"
+75-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Nicolas\.gradle\caches\8.13\transforms\27c724a203cfbea70503ea4ab40bad74\transformed\profileinstaller-1.4.0\AndroidManifest.xml:37:13-35
+76            android:exported="true"
+76-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Nicolas\.gradle\caches\8.13\transforms\27c724a203cfbea70503ea4ab40bad74\transformed\profileinstaller-1.4.0\AndroidManifest.xml:38:13-36
+77            android:permission="android.permission.DUMP" >
+77-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Nicolas\.gradle\caches\8.13\transforms\27c724a203cfbea70503ea4ab40bad74\transformed\profileinstaller-1.4.0\AndroidManifest.xml:39:13-57
 78            <intent-filter>
-78-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Nicolas\.gradle\caches\8.13\transforms\e9c16bd6cda757df6da4f791ea967460\transformed\profileinstaller-1.4.0\AndroidManifest.xml:46:13-48:29
-79                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
-79-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Nicolas\.gradle\caches\8.13\transforms\e9c16bd6cda757df6da4f791ea967460\transformed\profileinstaller-1.4.0\AndroidManifest.xml:47:17-88
-79-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Nicolas\.gradle\caches\8.13\transforms\e9c16bd6cda757df6da4f791ea967460\transformed\profileinstaller-1.4.0\AndroidManifest.xml:47:25-85
+78-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Nicolas\.gradle\caches\8.13\transforms\27c724a203cfbea70503ea4ab40bad74\transformed\profileinstaller-1.4.0\AndroidManifest.xml:40:13-42:29
+79                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
+79-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Nicolas\.gradle\caches\8.13\transforms\27c724a203cfbea70503ea4ab40bad74\transformed\profileinstaller-1.4.0\AndroidManifest.xml:41:17-91
+79-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Nicolas\.gradle\caches\8.13\transforms\27c724a203cfbea70503ea4ab40bad74\transformed\profileinstaller-1.4.0\AndroidManifest.xml:41:25-88
 80            </intent-filter>
 81            <intent-filter>
-81-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Nicolas\.gradle\caches\8.13\transforms\e9c16bd6cda757df6da4f791ea967460\transformed\profileinstaller-1.4.0\AndroidManifest.xml:49:13-51:29
-82                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
-82-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Nicolas\.gradle\caches\8.13\transforms\e9c16bd6cda757df6da4f791ea967460\transformed\profileinstaller-1.4.0\AndroidManifest.xml:50:17-95
-82-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Nicolas\.gradle\caches\8.13\transforms\e9c16bd6cda757df6da4f791ea967460\transformed\profileinstaller-1.4.0\AndroidManifest.xml:50:25-92
+81-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Nicolas\.gradle\caches\8.13\transforms\27c724a203cfbea70503ea4ab40bad74\transformed\profileinstaller-1.4.0\AndroidManifest.xml:43:13-45:29
+82                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
+82-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Nicolas\.gradle\caches\8.13\transforms\27c724a203cfbea70503ea4ab40bad74\transformed\profileinstaller-1.4.0\AndroidManifest.xml:44:17-85
+82-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Nicolas\.gradle\caches\8.13\transforms\27c724a203cfbea70503ea4ab40bad74\transformed\profileinstaller-1.4.0\AndroidManifest.xml:44:25-82
 83            </intent-filter>
-84        </receiver>
-85    </application>
-86
-87</manifest>
+84            <intent-filter>
+84-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Nicolas\.gradle\caches\8.13\transforms\27c724a203cfbea70503ea4ab40bad74\transformed\profileinstaller-1.4.0\AndroidManifest.xml:46:13-48:29
+85                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
+85-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Nicolas\.gradle\caches\8.13\transforms\27c724a203cfbea70503ea4ab40bad74\transformed\profileinstaller-1.4.0\AndroidManifest.xml:47:17-88
+85-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Nicolas\.gradle\caches\8.13\transforms\27c724a203cfbea70503ea4ab40bad74\transformed\profileinstaller-1.4.0\AndroidManifest.xml:47:25-85
+86            </intent-filter>
+87            <intent-filter>
+87-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Nicolas\.gradle\caches\8.13\transforms\27c724a203cfbea70503ea4ab40bad74\transformed\profileinstaller-1.4.0\AndroidManifest.xml:49:13-51:29
+88                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
+88-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Nicolas\.gradle\caches\8.13\transforms\27c724a203cfbea70503ea4ab40bad74\transformed\profileinstaller-1.4.0\AndroidManifest.xml:50:17-95
+88-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Nicolas\.gradle\caches\8.13\transforms\27c724a203cfbea70503ea4ab40bad74\transformed\profileinstaller-1.4.0\AndroidManifest.xml:50:25-92
+89            </intent-filter>
+90        </receiver>
+91    </application>
+92
+93</manifest>

@@ -1,64 +1,88 @@
 package cl.vasquez.nomadapp.view
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import coil.compose.AsyncImage
-import cl.vasquez.nomadapp.view.components.BlogCard
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
+import androidx.lifecycle.viewmodel.compose.viewModel
 import cl.vasquez.nomadapp.viewmodel.PostViewModel
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Logout
+import androidx.compose.material.icons.filled.Close
 import cl.vasquez.nomadapp.data.SessionManager
-import kotlinx.coroutines.runBlocking
+import cl.vasquez.nomadapp.data.remote.dto.PostDto
+import coil.compose.AsyncImage
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 /**
- * Pantalla que muestra la lista de publicaciones guardadas
+ * Pantalla que muestra la lista de publicaciones (admin)
+ * Consume backend y permite editar / eliminar.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PostListScreen(
     navController: NavController,
-    viewModel: PostViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
-){
-    //Observamos el flujo de publicaciones desde el ViewModel
-    val posts by viewModel.postList.collectAsState(initial = emptyList())
-    
-    // Obtener email del usuario desde SessionManager (blocking, idealmente use Flow)
-    val userEmail: String = runBlocking { SessionManager.getUserEmail().first() ?: "Usuario" }
+    viewModel: PostViewModel = viewModel()
+) {
+    /** Posts desde backend */
+    val posts by viewModel.posts.collectAsState()
+
+    /** Post seleccionado para eliminar */
+    var postToDelete by remember { mutableStateOf<PostDto?>(null) }
+
+    /** Imagen seleccionada para preview */
+    var selectedImageUrl by remember { mutableStateOf<String?>(null) }
+
+    val snackbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
+
+    val userEmail: String =
+        runBlocking { SessionManager.getUserEmail().first() ?: "Usuario" }
+
+    /** Cargar posts al entrar */
+    LaunchedEffect(Unit) {
+        viewModel.loadPosts()
+    }
 
     Scaffold(
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
             TopAppBar(
-                title = {Text("Mis Publicaciones") },
+                title = { Text("Mis Publicaciones") },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "Volver"
-                        )
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Volver")
                     }
                 },
                 actions = {
-                    // Mostrar email del usuario
                     Text(
                         text = userEmail,
                         modifier = Modifier.padding(horizontal = 8.dp),
                         fontSize = 12.sp,
                         color = MaterialTheme.colorScheme.onPrimary
                     )
-                    // Botón de logout
                     IconButton(onClick = {
                         runBlocking { SessionManager.logout() }
                         navController.navigate("login") {
@@ -79,31 +103,115 @@ fun PostListScreen(
             )
         }
     ) { innerPadding ->
-        //Contenido principal
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
                 .padding(16.dp)
         ) {
-            //Si hay publicaciones, las mostramos en una lista con estilo
+
             if (posts.isNotEmpty()) {
                 LazyColumn {
-                    items(posts) { post ->
-                        BlogCard(
-                            title = post.title,
-                            date = post.date,
-                            description = post.description,
-                            imageUrl = post.imageUri, // puede ser null
-                            onClick = { /* podria navegar a detalle si se implementa */ }
-                        )
+                    items(posts, key = { it.id ?: 0L }) { post ->
+                        AnimatedVisibility(
+                            visible = true,
+                            enter = fadeIn(),
+                            exit = fadeOut()
+                        ) {
+                            Card(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 8.dp),
+                                elevation = CardDefaults.cardElevation(4.dp)
+                            ) {
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(12.dp)
+                                ) {
+                                    Text(
+                                        text = post.title,
+                                        style = MaterialTheme.typography.titleLarge
+                                    )
+                                    Spacer(modifier = Modifier.height(4.dp))
+                                    Text(
+                                        text = post.date,
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    Text(
+                                        text = post.description,
+                                        style = MaterialTheme.typography.bodyMedium
+                                    )
+
+                                    /** IMÁGENES DEL POST */
+                                    if (post.imageUrls.isNotEmpty()) {
+                                        Spacer(modifier = Modifier.height(8.dp))
+                                        LazyRow(
+                                            contentPadding = PaddingValues(horizontal = 8.dp),
+                                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                        ) {
+                                            items(post.imageUrls) { url ->
+                                                AsyncImage(
+                                                    model = url,
+                                                    contentDescription = null,
+                                                    contentScale = ContentScale.Crop,
+                                                    modifier = Modifier
+                                                        .height(120.dp)
+                                                        .aspectRatio(4f / 3f)
+                                                        .clip(RoundedCornerShape(12.dp))
+                                                        .background(
+                                                            MaterialTheme.colorScheme.surfaceVariant
+                                                        )
+                                                        .clickable {
+                                                            selectedImageUrl = url
+                                                        }
+                                                )
+                                            }
+                                        }
+                                    }
+
+                                    Spacer(modifier = Modifier.height(8.dp))
+
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.End
+                                    ) {
+                                        TextButton(onClick = {
+                                            navController.navigate("editPost/${post.id}")
+                                        }) {
+                                            Icon(
+                                                imageVector = Icons.Default.Edit,
+                                                contentDescription = "Editar"
+                                            )
+                                            Spacer(modifier = Modifier.width(4.dp))
+                                            Text("Editar")
+                                        }
+
+                                        TextButton(onClick = {
+                                            postToDelete = post
+                                        }) {
+                                            Icon(
+                                                imageVector = Icons.Default.Delete,
+                                                contentDescription = "Eliminar",
+                                                tint = MaterialTheme.colorScheme.error
+                                            )
+                                            Spacer(modifier = Modifier.width(4.dp))
+                                            Text(
+                                                "Eliminar",
+                                                color = MaterialTheme.colorScheme.error
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             } else {
-                //Si no hay publicaciones, mostramos un mensaje vacío
                 Box(
-                    modifier = Modifier
-                        .fillMaxSize(),
+                    modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
@@ -114,5 +222,64 @@ fun PostListScreen(
                 }
             }
         }
+    }
+
+    /** Preview fullscreen de imagen */
+    selectedImageUrl?.let { imageUrl ->
+        Dialog(onDismissRequest = { selectedImageUrl = null }) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black),
+                contentAlignment = Alignment.Center
+            ) {
+                AsyncImage(
+                    model = imageUrl,
+                    contentDescription = "Preview imagen",
+                    contentScale = ContentScale.Fit,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                IconButton(
+                    onClick = { selectedImageUrl = null },
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(16.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = "Cerrar",
+                        tint = Color.White
+                    )
+                }
+            }
+        }
+    }
+
+    /** Diálogo de confirmación de eliminación */
+    postToDelete?.let { post ->
+        AlertDialog(
+            onDismissRequest = { postToDelete = null },
+            title = { Text("Eliminar publicación") },
+            text = { Text("¿Seguro que deseas eliminar \"${post.title}\"?") },
+            confirmButton = {
+                TextButton(onClick = {
+                    post.id?.let { id ->
+                        viewModel.deletePost(id)
+                    }
+                    postToDelete = null
+                    coroutineScope.launch {
+                        snackbarHostState.showSnackbar("Publicación eliminada")
+                    }
+                }) {
+                    Text("Eliminar", color = MaterialTheme.colorScheme.error)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { postToDelete = null }) {
+                    Text("Cancelar")
+                }
+            }
+        )
     }
 }

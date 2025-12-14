@@ -150,6 +150,28 @@ fun LoginScreen(
                 )
             )
 
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Checkbox: Recuerda la sesión
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Checkbox(
+                    checked = uiState.rememberSession,
+                    onCheckedChange = { viewModel.toggleRememberSession() },
+                    modifier = Modifier.size(24.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "Recuerda mi sesión",
+                    color = TextLight,
+                    fontSize = 14.sp
+                )
+            }
+
             Spacer(modifier = Modifier.height(28.dp))
 
             // Botón Login con gradiente
@@ -167,6 +189,22 @@ fun LoginScreen(
                 } else {
                     Text("Iniciar sesión", fontSize = 16.sp, fontWeight = FontWeight.Bold)
                 }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Botón Entrar como invitado
+            OutlinedButton(
+                onClick = { navController.navigate("home_guest") {
+                    popUpTo("login") { inclusive = false }
+                } },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp),
+                border = BorderStroke(2.dp, MagentaPrimary),
+                shape = RoundedCornerShape(8.dp)
+            ) {
+                Text("Entrar como invitado", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = MagentaPrimary)
             }
 
             Spacer(modifier = Modifier.height(16.dp))

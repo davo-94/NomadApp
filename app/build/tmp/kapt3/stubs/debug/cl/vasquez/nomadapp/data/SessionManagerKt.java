@@ -4,9 +4,20 @@ package cl.vasquez.nomadapp.data;
 public final class SessionManagerKt {
     @org.jetbrains.annotations.NotNull()
     private static final java.lang.String DATASTORE_NAME = "session_preferences";
+    
+    /**
+     * Context.dataStore crea una extensión del Context llamada dataStore. O sea, en cualquier
+     * lugar donde esté un Context se puede llamar a context.dataSore, lo que da acceso
+     * a session_preferences. <-- Este archivo
+     */
     @org.jetbrains.annotations.NotNull()
     private static final kotlin.properties.ReadOnlyProperty dataStore$delegate = null;
     
+    /**
+     * Context.dataStore crea una extensión del Context llamada dataStore. O sea, en cualquier
+     * lugar donde esté un Context se puede llamar a context.dataSore, lo que da acceso
+     * a session_preferences. <-- Este archivo
+     */
     private static final androidx.datastore.core.DataStore<androidx.datastore.preferences.core.Preferences> getDataStore(android.content.Context $this$dataStore) {
         return null;
     }

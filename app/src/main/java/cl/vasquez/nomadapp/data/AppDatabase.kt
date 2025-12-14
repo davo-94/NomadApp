@@ -7,24 +7,62 @@ import androidx.room.RoomDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import androidx.room.TypeConverters
+import androidx.sqlite.db.SupportSQLiteDatabase
+import androidx.room.migration.Migration
 
-/**
- * Actualizamos la base de datos para incluir la entidad User.
- * Incrementamos la versión a 2 y añadimos fallbackToDestructiveMigration
- * para simplificar durante el desarrollo.
- */
-@Database(entities = [Post::class, User::class], version = 2)
+// Version = 6 agrega campos a User (username, firstName, lastName, enabled)
+// Se incluyen todas las entidades: Post, Contact, User y AdminUser
+@Database(entities = [Post::class, Contact::class, User::class, AdminUser::class], version = 6, exportSchema = true)
+@TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
-    abstract fun postDao(): PostDao
-    abstract fun userDao(): UserDao
 
-    companion object{
+    abstract fun postDao(): PostDao
+    abstract fun contactDao(): ContactDao
+    abstract fun userDao(): UserDao
+    abstract fun adminUserDao(): AdminUserDao
+
+    companion object {
         /**
          * Patrón singleton asegura que la base de datos se cree una sola
          * vez y esté accesible desde toda la app.
          */
         @Volatile
         private var INSTANCE: AppDatabase? = null
+
+        /**
+         * Migración desde versión 3 → 4.
+         * Agrega la nueva columna imageUris (TEXT) en la tabla de publicaciones.
+         * Si existía imageUri, se migra su valor al nuevo campo.
+         * (Desactivada temporalmente mientras se usa fallbackToDestructiveMigration)
+         */
+        private val MIGRATION_3_4 = object : Migration(3, 4) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                // Agrega columna imageUris si no existe
+                db.execSQL("ALTER TABLE " +
+                                    "posts " +
+                                "ADD COLUMN imageUris TEXT NOT NULL DEFAULT ''")
+
+                // Copia valor de la columna anterior si existía
+                db.execSQL(
+                    """
+                    UPDATE posts
+                    SET imageUris = 
+                    CASE
+                        WHEN imageUri IS NOT NULL AND imageUri <> '' 
+                            THEN imageUri
+                        ELSE ''
+                    END
+                    """.trimIndent()
+                )
+            }
+        }
+
+        /**
+         *  Este bloque garantiza una sola instancia global y evita que se creen varias bases
+         *  al mismo tiempo en caso. Asegura que todos los componentes usen la misma DB.
+         */
+
 
         fun getDatabase(context: Context): AppDatabase {
             return INSTANCE ?: synchronized(this) {
@@ -33,25 +71,61 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "nomadapp_database"
                 )
+                    /**
+                     * fallbackToDestructiveMigration() elimina la base existente
+                     * si hay un cambio de versión y la reconstruye desde cero.
+                     *
+                     * Esta opción es ideal durante desarrollo, ya que evita
+                     * conflictos de migraciones al modificar entidades.
+                     *
+                     * En producción, se debería reemplazar por addMigrations(...)
+                     * para preservar los datos del usuario.
+                     */
                     .fallbackToDestructiveMigration()
-                    .build()
+                    //.addMigrations(MIGRATION_3_4) // <-- Intento fallido de migración
+                    .build()                        // Usamos .fallbackToDestructiveMigration
+                                                    //para que, en caso de que las versiones no
+                                                    //coincidan, Room no migre los datos sino que
+                                                    //borre la base antigua y cree una desde cero.
 
                 INSTANCE = instance
 
-                // Pre-popular usuarios de prueba si no existen (solo en desarrollo)
+                /**
+                 * Pre-poblar usuarios de prueba en la base de datos.
+                 * Este bloque se ejecuta al crear la instancia y agrega
+                 * dos usuarios predeterminados (solo si no existen).
+                 *
+                 * Se ejecuta en un hilo separado (Dispatchers.IO) para no bloquear la UI.
+                 * Si se ejecutara en el hilo principal, la app podría bloquearse.
+                 * "Haz esto fuera de la pantalla para no trabar la app."
+                 */
                 CoroutineScope(Dispatchers.IO).launch {
                     try {
                         val dao = instance.userDao()
-                        // admin
+
+                        // Usuario administrador
                         if (dao.getByEmail("admin@nomadapp.com") == null) {
-                            dao.insert(User(email = "admin@nomadapp.com", password = "123456", role = "admin"))
+                            dao.insert(
+                                User(
+                                    email = "admin@nomadapp.com",
+                                    password = "abc1234",
+                                    role = "admin"
+                                )
+                            )
                         }
-                        // usuario base / invitado
+
+                        // Usuario invitado
                         if (dao.getByEmail("user@nomadapp.com") == null) {
-                            dao.insert(User(email = "user@nomadapp.com", password = "password", role = "guest"))
+                            dao.insert(
+                                User(
+                                    email = "user@nomadapp.com",
+                                    password = "password123",
+                                    role = "guest"
+                                )
+                            )
                         }
                     } catch (_: Exception) {
-                        // Ignorar errores de pre-populado
+                        // Ignorar errores de pre-populado (por ejemplo, si la DB aún se inicializa)
                     }
                 }
 

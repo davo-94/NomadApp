@@ -26,6 +26,6 @@
       applicationId="cl.vasquez.nomadapp"
       generatedSourceFolders="build\generated\source\kapt\release;build\generated\ap_generated_sources\release\out"
       generatedResourceFolders="build\generated\res\resValues\release"
-      desugaredMethodsFiles="C:\Users\Nicolas\.gradle\caches\8.13\transforms\eb7e2706857272350a210e84958eb932\transformed\D8BackportedDesugaredMethods.txt">
+      desugaredMethodsFiles="C:\Users\Nicolas\.gradle\caches\8.13\transforms\5d86d527d5528741c3bae427c468d03f\transformed\D8BackportedDesugaredMethods.txt">
   </artifact>
 </variant>

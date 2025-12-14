@@ -1,38 +1,41 @@
 package cl.vasquez.nomadapp.view
 
-//Importaciones básicas de Jetpack Compose
+import android.util.Log
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Logout
+import androidx.compose.material3.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import cl.vasquez.nomadapp.data.SessionManager
+import cl.vasquez.nomadapp.viewmodel.LocationViewModel
+import cl.vasquez.nomadapp.view.components.HeaderSection
+import cl.vasquez.nomadapp.view.components.PrimaryButton
+import cl.vasquez.nomadapp.view.components.SecondaryButton
+import coil.compose.AsyncImage
 import kotlinx.coroutines.runBlocking
 
-/**
- * Pantalla principal (hub) de la app
- * donde el usuario podrá elegir entre crear o ver publicaciones
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(navController: NavController) {
 
-    /**
-     * Scaffold permite definir estructura base:
-     * AppBar arriba, contenido en el centro, etc.
-     */
+    val locationViewModel: LocationViewModel = viewModel()
+    val location by locationViewModel.location.collectAsStateWithLifecycle(initialValue = null)
+
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text("Bitácora Nómada") },
                 actions = {
-                    // Botón de logout
                     IconButton(onClick = {
                         runBlocking { SessionManager.logout() }
                         navController.navigate("login") {
@@ -53,49 +56,85 @@ fun HomeScreen(navController: NavController) {
             )
         }
     ) { innerPadding ->
-        //Columna central: centra los botones vertical y horizontalmente
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-                ) {
-            //Mensaje de bienvenida
-            Text(
-                text = "¡Bienvenido a tu Bitácora Nómada!",
-                style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.Bold,
-                fontSize = 22.sp,
-                modifier = Modifier.padding(bottom = 32.dp)
+        ) {
+
+            // Fondo semitransparente
+            AsyncImage(
+                model = "https://images.unsplash.com/photo-1501785888041-af3ef285b470",
+                contentDescription = "Fondo de viajes",
+                modifier = Modifier
+                    .fillMaxSize()
+                    .alpha(0.2f),
+                contentScale = ContentScale.Crop
             )
-            //Botón para crear nueva publicación
-            Button(
-                onClick = {
-                    //Navegamos hacia la pantalla del formulario
-                    navController.navigate("post_form")
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp)
-            ) {
-                Text("Nueva Publicación")
-            }
-            //Botón para ver publicaciones existentes
-            Button(
-                onClick = {
-                    //Navegamos hacia la lista de publicaciones
-                    navController.navigate("post_list")
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.secondary
+
+            // Widget de ubicación
+            location?.let { loc ->
+                Text(
+                    text = "📍 ${loc.city ?: ""}, ${loc.country_name ?: ""}",
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(16.dp),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onPrimary
                 )
-            ){
-                Text("Mis publicaciones")
+            }
+
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 24.dp, vertical = 16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Top
+            ) {
+
+                HeaderSection(
+                    title = "¡Bienvenido a tu Bitácora Nómada!",
+                    subtitle = "Publica tus experiencias y explora las de otros viajeros."
+                )
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                PrimaryButton(
+                    text = "Nueva Publicación",
+                    onClick = { navController.navigate("post_form") }
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                SecondaryButton(
+                    text = "Mis publicaciones",
+                    onClick = { navController.navigate("post_list") }
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                SecondaryButton(
+                    text = "Contacto",
+                    onClick = { navController.navigate("contact_form") }
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                val userRole = SessionManager
+                    .getUserRole()
+                    .collectAsState(initial = null).value
+
+                Log.d("HomeScreen", "userRole = '$userRole'")
+
+                if (userRole?.equals("ADMIN", ignoreCase = true) == true) {
+                    SecondaryButton(
+                        text = "Panel de Administración",
+                        onClick = { navController.navigate("admin_panel") },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 8.dp)
+                    )
+                }
             }
         }
     }
