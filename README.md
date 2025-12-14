@@ -102,6 +102,17 @@ El proyecto sigue el patrón **Model–View–ViewModel**, permitiendo una separ
 
 ##  Cómo ejecutar el proyecto
 
+## IMPORTANTE
+
+En el **backend**, se debe configurar la IP local del servidor donde corre la aplicación (por ejemplo, 192.168.0.102) para las URLs de las imágenes.
+Esta configuración se encuentra en el archivo PostController.java, específicamente en la línea:
+String url = "http://<IP_LOCAL>:8082/uploads/" + filename;
+
+Esta IP debe actualizarse cada vez que se ejecute el backend en un nuevo dispositivo.
+
+Y, en el frontend, se debe asegurar de actualizar la IP local del backend en NomadApiClient para que la app Android haga las peticiones correctamente.
+Frontend (Android): La app debe configurarse para conectar al backend usando la IP local del PC donde corre. Esto se configura en NomadApiClient y network_security_config.xml.
+
 1. Clonar el repositorio:
    ```bash
    git clone https://github.com/tuusuario/NomadApp.git
