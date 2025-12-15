@@ -25,11 +25,16 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.CheckCircle
 import cl.vasquez.nomadapp.data.SessionManager
-import cl.vasquez.nomadapp.utils.PermissionManager
 import kotlinx.coroutines.runBlocking
 import coil.compose.AsyncImage
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.flow.first
+import androidx.core.content.FileProvider
+import java.io.File
+import android.Manifest
+import android.content.pm.PackageManager
+import androidx.core.content.ContextCompat
+
+
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -60,6 +65,10 @@ fun PostFormScreen(
      */
     var imageUris by remember { mutableStateOf<List<Uri>>(emptyList()) }
 
+    //Estado para cámara
+    val cameraImageUri = remember { mutableStateOf<Uri?>(null) }
+
+
     /**
      * Estado para controlar la visibilidad del diálogo de confirmación
      */
@@ -71,7 +80,7 @@ fun PostFormScreen(
      */
     val context = LocalContext.current
 
-    val galleryLauncher = rememberLauncherForActivityResult(
+    val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetMultipleContents()
     ) { uris: List<Uri> ->
         if (uris.isNotEmpty()) {
@@ -89,15 +98,41 @@ fun PostFormScreen(
         }
     }
 
-    // Launcher para solicitar permisos de fotos
-    val permissionLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestMultiplePermissions()
-    ) { permissions ->
-        val allGranted = permissions.values.all { it }
-        if (allGranted) {
-            galleryLauncher.launch("image/*")
+
+
+
+    //Launcher de cámara
+    val cameraLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { success ->
+            if (success) {
+                cameraImageUri.value?.let { uri ->
+                    imageUris = imageUris + uri
+                }
+            }
         }
+
+    //Función para crear la Uri de la cámara
+    fun createCameraImageUri(context: android.content.Context): Uri {
+        val file = File.createTempFile("camera_", ".jpg", context.cacheDir)
+        return FileProvider.getUriForFile(
+            context,
+            "${context.packageName}.provider",
+            file
+        )
     }
+
+    //Launcher de permiso Camera
+    val cameraPermissionLauncher =
+        rememberLauncherForActivityResult(
+            ActivityResultContracts.RequestPermission()
+        ) { isGranted ->
+            if (isGranted) {
+                val uri = createCameraImageUri(context)
+                cameraImageUri.value = uri
+                cameraLauncher.launch(uri)
+            }
+        }
+
 
     /**
      * Estructura principal con barra superior
@@ -196,23 +231,31 @@ fun PostFormScreen(
 
             /**
              * Botón para seleccionar múltiples imágenes desde la galería
-             * Solicita permisos de acceso a fotos si es necesario
              */
-            Button(
-                onClick = {
-                    // Verificar si ya tiene permisos de fotos
-                    if (PermissionManager.hasPhotoPermission(context)) {
-                        galleryLauncher.launch("image/*")
-                    } else {
-                        // Si no tiene permisos, solicitarlos usando PermissionManager
-                        PermissionManager.requestPhotoPermission(permissionLauncher)
-                    }
-                }
-            ) {
+            Button(onClick = { launcher.launch("image/*") }) {
                 Text("Seleccionar imágenes")
             }
 
             Spacer(modifier = Modifier.height(8.dp))
+
+            Button(
+                onClick = {
+                    val hasPermission = ContextCompat.checkSelfPermission(
+                        context,
+                        Manifest.permission.CAMERA
+                    ) == PackageManager.PERMISSION_GRANTED
+
+                    if (hasPermission) {
+                        val uri = createCameraImageUri(context)
+                        cameraImageUri.value = uri
+                        cameraLauncher.launch(uri)
+                    } else {
+                        cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+                    }
+                }
+            ) {
+            Text("Tomar foto")
+            }
 
             /**
              * Vista previa de las imágenes seleccionadas (en fila horizontal)
