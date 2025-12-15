@@ -31,6 +31,10 @@ import androidx.compose.material.icons.filled.Close
 import cl.vasquez.nomadapp.data.SessionManager
 import kotlinx.coroutines.runBlocking
 import androidx.compose.ui.window.Dialog
+import kotlinx.coroutines.flow.first
+import cl.vasquez.nomadapp.data.Role
+import androidx.compose.material3.AlertDialog
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -44,6 +48,14 @@ fun EditPostScreen(
     /** Cargar posts al entrar */
     LaunchedEffect(Unit) {
         viewModel.loadPosts()
+    }
+
+    val userEmail = runBlocking { SessionManager.getUserEmail().first() }
+    val userRole = runBlocking {
+        SessionManager.getUserRole().first()
+            ?.uppercase()
+            ?.let { Role.valueOf(it) }
+            ?: Role.GUEST
     }
 
     /** Observamos posts desde backend */
@@ -118,6 +130,31 @@ fun EditPostScreen(
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+
+            val canEdit =
+                userRole == Role.ADMIN ||
+                        userRole == Role.MODERATOR ||
+                (userRole == Role.USER && post.ownerEmail == userEmail)
+
+            //Bloqueo de permisos
+            if (!canEdit) {
+                AlertDialog(
+                    onDismissRequest = { navController.popBackStack() },
+                    confirmButton = {
+                        Button(onClick = { navController.popBackStack() }) {
+                            Text ("Volver")
+                        }
+                    },
+                    title = {
+                        Text("Acceso restringido")
+                    },
+                    text = {
+                        Text("No tienes permisos para editar esta publicación.")
+                    }
+
+                )
+                return@Column
+            }
 
             OutlinedTextField(
                 value = title,

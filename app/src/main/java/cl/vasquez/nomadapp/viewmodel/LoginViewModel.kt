@@ -41,14 +41,6 @@ class LoginViewModel(application: Application): AndroidViewModel(application) {
     //uiState -> Solo lectra, la Screen lo observa pero no lo puede modificar.
     private val _uiState = MutableStateFlow(LoginUiState())
     val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
-    // modo de prueba local (no usa DB)
-    private var testMode: Boolean = false
-
-    // usuarios de prueba en memoria
-    private val testUsers = listOf(
-        User(email = "admin@nomadapp.com", password = "abc1234", role = "admin"),
-        User(email = "user@nomadapp.com", password = "password123", role = "guest")
-    )
 
     fun onEmailChange(email: String) {
         _uiState.value = _uiState.value.copy(email = email, emailError = null)
@@ -91,13 +83,10 @@ class LoginViewModel(application: Application): AndroidViewModel(application) {
 
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true, loginResult = LoginResult.Loading)
-            val result = if (testMode) {
-                // autenticar contra lista en memoria
-                val u = testUsers.find { it.email.equals(_uiState.value.email, ignoreCase = true) && it.password == _uiState.value.password }
-                if (u != null) LoginResult.Success(u) else LoginResult.Error("Email o contraseña incorrectos (modo prueba)")
-            } else {
-                repository.login(_uiState.value.email, _uiState.value.password)
-            }
+            val result = repository.login(
+                _uiState.value.email,
+                _uiState.value.password)
+
             
             // Guardar sesión si el login fue exitoso
             if (result is LoginResult.Success) {
@@ -106,12 +95,6 @@ class LoginViewModel(application: Application): AndroidViewModel(application) {
             
             _uiState.value = _uiState.value.copy(isLoading = false, loginResult = result)
         }
-    }
-
-    fun toggleTestMode() {
-        testMode = !testMode
-        // show a small message in email field to indicate mode
-        _uiState.value = _uiState.value.copy(emailError = if (testMode) "Modo prueba activo" else null)
     }
 
     fun resetLoginResult() {
