@@ -10,7 +10,8 @@ import androidx.compose.ui.platform.LocalContext
 
 /**
  * Composable que solicita permisos de galería y luego abre el selector de fotos
- * Maneja automáticamente los permisos necesarios para acceder a la galería en diferentes versiones de Android
+ * Utiliza PermissionManager para manejar permisos de manera centralizada
+ * Compatible con Android 11 y versiones posteriores
  */
 @Composable
 fun remotePhotoPickerLauncher(
@@ -38,40 +39,44 @@ fun remotePhotoPickerLauncher(
         }
     }
     
-    // Launcher para solicitar permisos (manejo simplificado)
-    val permissionLauncher = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        // Android 13+
-        rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.RequestMultiplePermissions()
-        ) { permissions ->
-            if (permissions.values.all { it }) {
-                galleryLauncher.launch("image/*")
-            }
-        }
-    } else {
-        // Android 12 y anteriores
-        rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.RequestPermission()
-        ) { isGranted ->
-            if (isGranted) {
-                galleryLauncher.launch("image/*")
-            }
+    // Launcher para solicitar permisos usando el PermissionManager
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        val allGranted = permissions.values.all { it }
+        if (allGranted) {
+            galleryLauncher.launch("image/*")
         }
     }
     
     // Retornar función que solicita permisos y abre la galería
     return {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            // Android 13+: solicitar READ_MEDIA_IMAGES
-            @Suppress("UNCHECKED_CAST")
-            val launcher = permissionLauncher as androidx.activity.result.ActivityResultLauncher<Array<String>>
-            launcher.launch(arrayOf(Manifest.permission.READ_MEDIA_IMAGES))
-        } else {
-            // Android 12 y anteriores: solicitar READ_EXTERNAL_STORAGE
-            @Suppress("UNCHECKED_CAST")
-            val launcher = permissionLauncher as androidx.activity.result.ActivityResultLauncher<String>
-            launcher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+        // Usar PermissionManager para solicitar solo permisos de fotos
+        PermissionManager.requestPhotoPermission(permissionLauncher)
+    }
+}
+
+/**
+ * Composable que solicita permiso de ubicación y retorna un launcher
+ * para acceder a la ubicación
+ */
+@Composable
+fun remoteLocationPermissionLauncher(
+    onPermissionGranted: () -> Unit
+): () -> Unit {
+    // Launcher para solicitar permisos de ubicación
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        val allGranted = permissions.values.all { it }
+        if (allGranted) {
+            onPermissionGranted()
         }
+    }
+    
+    return {
+        // Usar PermissionManager para solicitar permisos de ubicación
+        PermissionManager.requestLocationPermission(permissionLauncher)
     }
 }
 
@@ -96,4 +101,3 @@ fun remoteCameraLauncher(
         permissionLauncher.launch(Manifest.permission.CAMERA)
     }
 }
-

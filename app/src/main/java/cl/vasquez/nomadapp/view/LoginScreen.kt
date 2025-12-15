@@ -48,21 +48,29 @@ fun LoginScreen(
     LaunchedEffect(uiState.loginResult) {
         when (val r = uiState.loginResult) {
             is LoginResult.Success -> {
-                // Dirigir según rol
-                val role = r.user.role
-                if (role == "admin") {
-                    navController.navigate("home_admin") {
-                        popUpTo("login") { inclusive = true }
+                when (r.user.role.uppercase()) {
+                    "ADMIN" -> {
+                        navController.navigate("home_admin") {
+                            popUpTo("login") { inclusive = true }
+                        }
                     }
-                } else {
-                    navController.navigate("home_guest") {
-                        popUpTo("login") { inclusive = true }
+                    "USER", "MODERATOR" -> {
+                        navController.navigate("home_admin") {
+                            popUpTo("login") { inclusive = true }
+                        }
+                    }
+                    else -> {
+                        navController.navigate("home_guest") {
+                            popUpTo("login") { inclusive = true }
+                        }
                     }
                 }
             }
-            else -> {}
+            else -> Unit
         }
     }
+
+
 
     Box(
         modifier = Modifier
@@ -79,7 +87,7 @@ fun LoginScreen(
         ) {
             // Título
             Text(
-                text = "Nomada App",
+                text = "NomadApp",
                 style = MaterialTheme.typography.headlineLarge,
                 fontWeight = FontWeight.Bold,
                 color = MagentaPrimary,
@@ -207,6 +215,18 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(20.dp))
 
+            //Botón 'Entrar como invitado'
+            TextButton(
+                onClick = {
+                    navController.navigate("home_guest") {
+                        popUpTo("login") { inclusive = true }
+                    }
+                }
+            ) {
+                Text("Entrar como invitado")
+            }
+
+
             // Error message
             AnimatedVisibility(visible = uiState.loginResult is LoginResult.Error, enter = fadeIn(), exit = fadeOut()) {
                 Card(
@@ -233,20 +253,10 @@ fun LoginScreen(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                TextButton(onClick = { viewModel.toggleTestMode() }, modifier = Modifier.weight(1f)) {
-                    Text("Modo prueba", color = MagentaPrimary, fontSize = 12.sp)
-                }
-            }
+                            }
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Demo users info
-            Text(
-                text = "Demo: admin@nomadapp.com / 123456",
-                style = MaterialTheme.typography.labelSmall,
-                color = TextLight.copy(alpha = 0.5f),
-                fontSize = 11.sp
-            )
         }
     }
 }

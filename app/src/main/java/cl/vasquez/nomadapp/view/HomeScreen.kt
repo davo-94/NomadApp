@@ -31,6 +31,11 @@ fun HomeScreen(navController: NavController) {
     val locationViewModel: LocationViewModel = viewModel()
     val location by locationViewModel.location.collectAsStateWithLifecycle(initialValue = null)
 
+    //Definición de userRole
+    val userRole = SessionManager
+        .getUserRole()
+        .collectAsState(initial = null).value
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -99,27 +104,40 @@ fun HomeScreen(navController: NavController) {
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                PrimaryButton(
-                    text = "Nueva Publicación",
-                    onClick = { navController.navigate("post_form") }
-                )
+                if (userRole.equals("USER", true) ||
+                    userRole.equals("ADMIN", true)
+                ) {
+                    PrimaryButton(
+                        text = "Nueva Publicación",
+                        onClick = { navController.navigate("post_form") }
+                    )
 
-                Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
+                }
 
-                SecondaryButton(
-                    text = "Mis publicaciones",
-                    onClick = { navController.navigate("post_list") }
-                )
+                if (
+                    userRole.equals("USER", true) ||
+                    userRole.equals("ADMIN", true) ||
+                    userRole.equals("MODERATOR", true)
+                ) {
+                    SecondaryButton(
+                        text = "Mis publicaciones",
+                        onClick = { navController.navigate("post_list") }
+                    )
 
-                Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
+                }
+                if (
+                    userRole.equals("USER", true) ||
+                    userRole.equals("ADMIN", true)
+                ){
+                        SecondaryButton(
+                            text = "Contacto",
+                            onClick = { navController.navigate("contact_form") }
+                        )
 
-                SecondaryButton(
-                    text = "Contacto",
-                    onClick = { navController.navigate("contact_form") }
-                )
-
-                Spacer(modifier = Modifier.height(12.dp))
-
+                        Spacer(modifier = Modifier.height(12.dp))
+                    }
                 val userRole = SessionManager
                     .getUserRole()
                     .collectAsState(initial = null).value

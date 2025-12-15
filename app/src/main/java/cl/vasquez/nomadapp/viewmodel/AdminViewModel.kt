@@ -87,20 +87,11 @@ class AdminViewModel(
                 // Actualiza solo localmente en BD
                 val currentUser = _users.value.find { it.id == userId }
                 if (currentUser != null) {
-                    val user = User(
-                        id = currentUser.id.toInt(),
-                        username = currentUser.username,
-                        email = currentUser.email,
-                        password = "", // No cambiar password
-                        firstName = currentUser.firstName,
-                        lastName = currentUser.lastName,
-                        role = newRole,
-                        enabled = currentUser.enabled
-                    )
                     withContext(Dispatchers.IO) {
-                        _database?.userDao()?.update(user)
+                        val dao = _database?.userDao() ?: return@withContext
+                        val realUser = dao.getByEmail(currentUser.email) ?: return@withContext
+                        dao.update(realUser.copy(role = newRole))
                     }
-                    
                     // Actualiza UI
                     val updatedUsers = _users.value.map { userItem ->
                         if (userItem.id == userId) {

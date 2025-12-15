@@ -35,6 +35,9 @@ import coil.compose.AsyncImage
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
+import cl.vasquez.nomadapp.data.Role
 
 /**
  * Pantalla que muestra la lista de publicaciones (admin)
@@ -58,14 +61,20 @@ fun PostListScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
 
-    val userEmail: String =
-        runBlocking { SessionManager.getUserEmail().first() ?: "Usuario" }
 
     /** Cargar posts al entrar */
     LaunchedEffect(Unit) {
         viewModel.loadPosts()
     }
 
+    val userEmail : String =
+        runBlocking { SessionManager.getUserEmail().first() } ?: "Usuario"
+    val userRole = runBlocking {
+        SessionManager.getUserRole().first()
+            ?.uppercase()
+            ?.let { Role.valueOf(it) }
+            ?: Role.GUEST
+    }
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
@@ -172,8 +181,14 @@ fun PostListScreen(
                                         }
                                     }
 
+                                    val canEditOrDelete =
+                                        userRole == Role.ADMIN ||
+                                                userRole == Role.MODERATOR ||
+                                                (userRole == Role.USER && post.ownerEmail == userEmail)
+
                                     Spacer(modifier = Modifier.height(8.dp))
 
+                                    if (canEditOrDelete) {
                                     Row(
                                         modifier = Modifier.fillMaxWidth(),
                                         horizontalArrangement = Arrangement.End
@@ -203,6 +218,7 @@ fun PostListScreen(
                                                 color = MaterialTheme.colorScheme.error
                                             )
                                         }
+                                    }
                                     }
                                 }
                             }

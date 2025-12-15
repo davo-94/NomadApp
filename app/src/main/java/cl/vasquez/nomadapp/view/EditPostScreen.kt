@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.lifecycle.viewmodel.compose.viewModel
 import cl.vasquez.nomadapp.viewmodel.PostViewModel
+import cl.vasquez.nomadapp.utils.PermissionManager
 import coil.compose.AsyncImage
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -31,6 +32,10 @@ import androidx.compose.material.icons.filled.Close
 import cl.vasquez.nomadapp.data.SessionManager
 import kotlinx.coroutines.runBlocking
 import androidx.compose.ui.window.Dialog
+import kotlinx.coroutines.flow.first
+import cl.vasquez.nomadapp.data.Role
+import androidx.compose.material3.AlertDialog
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -44,6 +49,14 @@ fun EditPostScreen(
     /** Cargar posts al entrar */
     LaunchedEffect(Unit) {
         viewModel.loadPosts()
+    }
+
+    val userEmail = runBlocking { SessionManager.getUserEmail().first() }
+    val userRole = runBlocking {
+        SessionManager.getUserRole().first()
+            ?.uppercase()
+            ?.let { Role.valueOf(it) }
+            ?: Role.GUEST
     }
 
     /** Observamos posts desde backend */
@@ -73,7 +86,7 @@ fun EditPostScreen(
     var selectedImageUrl by remember { mutableStateOf<String?>(null) }
 
     /** Selector de imágenes */
-    val launcher = rememberLauncherForActivityResult(
+    val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetMultipleContents()
     ) { uris ->
         if (uris.isNotEmpty()) {
@@ -86,6 +99,16 @@ fun EditPostScreen(
                 } catch (_: SecurityException) { }
             }
             newImageUris = uris
+        }
+    }
+
+    // Launcher para solicitar permisos de fotos
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        val allGranted = permissions.values.all { it }
+        if (allGranted) {
+            galleryLauncher.launch("image/*")
         }
     }
 
@@ -118,6 +141,31 @@ fun EditPostScreen(
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+
+            val canEdit =
+                userRole == Role.ADMIN ||
+                        userRole == Role.MODERATOR ||
+                (userRole == Role.USER && post.ownerEmail == userEmail)
+
+            //Bloqueo de permisos
+            if (!canEdit) {
+                AlertDialog(
+                    onDismissRequest = { navController.popBackStack() },
+                    confirmButton = {
+                        Button(onClick = { navController.popBackStack() }) {
+                            Text ("Volver")
+                        }
+                    },
+                    title = {
+                        Text("Acceso restringido")
+                    },
+                    text = {
+                        Text("No tienes permisos para editar esta publicación.")
+                    }
+
+                )
+                return@Column
+            }
 
             OutlinedTextField(
                 value = title,
@@ -164,8 +212,18 @@ fun EditPostScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            /** Agregar nuevas imágenes */
-            Button(onClick = { launcher.launch("image/*") }) {
+            /** Agregar nuevas imágenes con solicitud de permisos */
+            Button(
+                onClick = {
+                    // Verificar si ya tiene permisos de fotos
+                    if (PermissionManager.hasPhotoPermission(context)) {
+                        galleryLauncher.launch("image/*")
+                    } else {
+                        // Si no tiene permisos, solicitarlos usando PermissionManager
+                        PermissionManager.requestPhotoPermission(permissionLauncher)
+                    }
+                }
+            ) {
                 Text("Agregar imágenes")
             }
 

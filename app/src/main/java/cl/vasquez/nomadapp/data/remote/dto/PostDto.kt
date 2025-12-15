@@ -5,5 +5,6 @@ data class PostDto(
     val title: String,
     val description: String,
     val date: String,
-    val imageUrls: List<String> = emptyList()
+    val imageUrls: List<String> = emptyList(),
+    val ownerEmail: String? = null
 )
