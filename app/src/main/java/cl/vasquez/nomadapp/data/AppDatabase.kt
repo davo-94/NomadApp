@@ -109,21 +109,15 @@ abstract class AppDatabase : RoomDatabase() {
                                 User(
                                     email = "admin@nomadapp.com",
                                     password = "abc1234",
-                                    role = "admin"
+                                    role = "ADMIN",
+                                    username = "admin",
+                                    firstName = "Admin",
+                                    lastName = "NomadApp",
+                                    enabled = true
                                 )
                             )
                         }
 
-                        // Usuario invitado
-                        if (dao.getByEmail("user@nomadapp.com") == null) {
-                            dao.insert(
-                                User(
-                                    email = "user@nomadapp.com",
-                                    password = "password123",
-                                    role = "guest"
-                                )
-                            )
-                        }
                     } catch (_: Exception) {
                         // Ignorar errores de pre-populado (por ejemplo, si la DB aún se inicializa)
                     }

@@ -28,6 +28,9 @@ import cl.vasquez.nomadapp.data.SessionManager
 import cl.vasquez.nomadapp.utils.PermissionManager
 import kotlinx.coroutines.runBlocking
 import coil.compose.AsyncImage
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.flow.first
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -237,10 +240,20 @@ fun PostFormScreen(
             Button(
                 onClick = {
                     if (title.isNotEmpty() && description.isNotEmpty()) {
+
+                        //runBlocking 'bloquea' el hilo actual y ejecuta una corrutina
+                        //de forma asíncrona. "Espera" el valor de SessionManager.getUserEmail()
+                        //antes de continuar.
+                        val ownerEmail = runBlocking {
+                            //first() -> Obtiene el primer valor emitido por el Flow
+                            SessionManager.getUserEmail().first()
+                        }
+
                         val postDto = PostDto(
                             title = title,
                             description = description,
-                            date = date
+                            date = date,
+                            ownerEmail = ownerEmail
                         )
 
                         viewModel.createPostWithImages(

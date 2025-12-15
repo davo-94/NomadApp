@@ -15,6 +15,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import cl.vasquez.nomadapp.data.SessionManager
+import cl.vasquez.nomadapp.view.components.SecondaryButton
 import kotlinx.coroutines.runBlocking
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -89,6 +90,17 @@ fun GuestHomeScreen(navController: NavController) {
                 ) {
                     Text("Ver publicaciones")
                 }
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Button(
+                    onClick = { navController.navigate("contact_form") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp)
+                ) {
+                    Text("Contacto")
+                }
+
             }
         }
     }
