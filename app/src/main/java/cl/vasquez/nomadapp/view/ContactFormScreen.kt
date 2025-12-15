@@ -1,7 +1,6 @@
 package cl.vasquez.nomadapp.view
 
 import android.content.Context
-import android.content.Intent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -31,14 +30,15 @@ fun ContactFormScreen(
     viewModel: ContactViewModel = viewModel()
 ) {
     val context = LocalContext.current
-    val paises = remember { cargarPaisesDesdeAssets(context) } //Acá llamamos a la función para cargar
-                                                                //el json 'paises.json'
+    val paises = remember { cargarPaisesDesdeAssets(context) }
 
     var nombre by remember { mutableStateOf(TextFieldValue("")) }
     var correo by remember { mutableStateOf(TextFieldValue("")) }
     var mensaje by remember { mutableStateOf(TextFieldValue("")) }
     var paisSeleccionado by remember { mutableStateOf("") }
     var expanded by remember { mutableStateOf(false) }
+
+    var isSending by remember { mutableStateOf(false) }
 
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
@@ -64,6 +64,7 @@ fun ContactFormScreen(
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+
             val nombreError = ValidationUtils.getNombreErrorMessage(nombre.text)
             OutlinedTextField(
                 value = nombre,
@@ -71,14 +72,15 @@ fun ContactFormScreen(
                 label = { Text("Nombre") },
                 isError = nombreError != null,
                 supportingText = {
-                    if (nombreError != null) Text(nombreError, color = MaterialTheme.colorScheme.error)
+                    if (nombreError != null) {
+                        Text(nombreError, color = MaterialTheme.colorScheme.error)
+                    }
                 },
                 modifier = Modifier.fillMaxWidth()
             )
 
             Spacer(Modifier.height(8.dp))
 
-            //Correo
             val emailError = ValidationUtils.getEmailErrorMessage(correo.text)
             OutlinedTextField(
                 value = correo,
@@ -86,15 +88,15 @@ fun ContactFormScreen(
                 label = { Text("Correo electrónico") },
                 isError = emailError != null,
                 supportingText = {
-                    if (emailError != null) Text(emailError, color = MaterialTheme.colorScheme.error)
+                    if (emailError != null) {
+                        Text(emailError, color = MaterialTheme.colorScheme.error)
+                    }
                 },
                 modifier = Modifier.fillMaxWidth()
             )
 
             Spacer(Modifier.height(8.dp))
 
-            //país
-            //Text(text = "País", style = MaterialTheme.typography.bodyLarge)
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -104,7 +106,7 @@ fun ContactFormScreen(
                     value = paisSeleccionado,
                     onValueChange = {},
                     readOnly = true,
-                    enabled = false, // evita foco y bloqueo del dropdown
+                    enabled = false,
                     label = { Text("Selecciona un país") },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -115,7 +117,7 @@ fun ContactFormScreen(
                     onDismissRequest = { expanded = false },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .heightIn(max = 300.dp) // si hay muchos países, limita la altura
+                        .heightIn(max = 300.dp)
                 ) {
                     paises.forEach { pais ->
                         DropdownMenuItem(
@@ -131,7 +133,6 @@ fun ContactFormScreen(
 
             Spacer(Modifier.height(8.dp))
 
-            //Mensaje
             val mensajeError = ValidationUtils.getMensajeErrorMessage(mensaje.text)
             OutlinedTextField(
                 value = mensaje,
@@ -139,7 +140,9 @@ fun ContactFormScreen(
                 label = { Text("Mensaje") },
                 isError = mensajeError != null,
                 supportingText = {
-                    if (mensajeError != null) Text(mensajeError, color = MaterialTheme.colorScheme.error)
+                    if (mensajeError != null) {
+                        Text(mensajeError, color = MaterialTheme.colorScheme.error)
+                    }
                 },
                 modifier = Modifier.fillMaxWidth(),
                 maxLines = 4
@@ -155,7 +158,8 @@ fun ContactFormScreen(
                             mensaje.text
                         )
                     ) {
-                        // Guarda en Room
+                        isSending = true
+
                         viewModel.addContact(
                             nombre.text,
                             correo.text,
@@ -163,29 +167,44 @@ fun ContactFormScreen(
                             mensaje.text
                         )
 
-                        // Envía correo
-                        enviarCorreo(context, nombre.text, correo.text, paisSeleccionado, mensaje.text)
-                        scope.launch {
-                            snackbarHostState.showSnackbar("Mensaje enviado con éxito")
+                        viewModel.sendContactToBackend(
+                            nombre = nombre.text,
+                            correo = correo.text,
+                            pais = paisSeleccionado,
+                            mensaje = mensaje.text
+                        ) { success ->
+                            scope.launch {
+                                isSending = false
+                                if (success) {
+                                    snackbarHostState.showSnackbar("Mensaje enviado con éxito")
+                                    nombre = TextFieldValue("")
+                                    correo = TextFieldValue("")
+                                    mensaje = TextFieldValue("")
+                                    paisSeleccionado = ""
+                                } else {
+                                    snackbarHostState.showSnackbar("Error al enviar el mensaje")
+                                }
+                            }
                         }
-                        scope.launch {
-                            snackbarHostState.showSnackbar("Mensaje enviado con éxito")
-                        }
-
-                        // Limpiar campos
-                        nombre = TextFieldValue("")
-                        correo = TextFieldValue("")
-                        mensaje = TextFieldValue("")
-                        paisSeleccionado = ""
                     } else {
                         scope.launch {
                             snackbarHostState.showSnackbar("Por favor revisa los campos del formulario")
                         }
                     }
                 },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                enabled = !isSending
             ) {
-                Text("Enviar")
+                if (isSending) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(20.dp),
+                        strokeWidth = 2.dp
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    Text("Enviando...")
+                } else {
+                    Text("Enviar")
+                }
             }
         }
     }
@@ -198,31 +217,3 @@ fun cargarPaisesDesdeAssets(context: Context): List<Pais> {
     val tipoLista = object : TypeToken<List<Pais>>() {}.type
     return Gson().fromJson(reader, tipoLista)
 }
-
-// Envía correo usando Intent implícito
-fun enviarCorreo(
-    context: Context,
-    nombre: String,
-    correo: String,
-    pais: String,
-    mensaje: String,
-    onError: () -> Unit = {}
-) {
-    val intent = Intent(Intent.ACTION_SEND).apply {
-        type = "text/plain"
-        putExtra(Intent.EXTRA_EMAIL, arrayOf("soporte@bitacoranomada.com"))
-        putExtra(Intent.EXTRA_SUBJECT, "Nuevo mensaje de contacto")
-        putExtra(
-            Intent.EXTRA_TEXT,
-            "Nombre: $nombre\nCorreo: $correo\nPaís: $pais\nMensaje:\n$mensaje"
-        )
-    }
-
-    try {
-        context.startActivity(Intent.createChooser(intent, "Enviar correo con..."))
-    } catch (e: Exception) {
-        onError()
-    }
-}
-
-

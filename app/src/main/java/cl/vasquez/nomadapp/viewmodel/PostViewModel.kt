@@ -14,6 +14,9 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
+import cl.vasquez.nomadapp.utils.ImageCompressionUtils
+import okhttp3.MediaType.Companion.toMediaType
+
 
 
 class PostViewModel : ViewModel() {
@@ -51,20 +54,17 @@ class PostViewModel : ViewModel() {
                 //Preparar imágenes(multipart)
                 if (imageUris.isNotEmpty()) {
                     val parts = imageUris.map { uri ->
-                        val inputStream = context.contentResolver.openInputStream(uri)
-                            ?: throw IllegalStateException("No se pudo abrir la imagen")
-
-                        val file = File.createTempFile("img_", ".jpg", context.cacheDir)
-                        file.outputStream().use { output ->
-                            inputStream.copyTo(output)
-                        }
+                        val compressedFile = ImageCompressionUtils.compress(
+                            context = context,
+                            uri = uri
+                        )
 
                         val requestBody =
-                            file.asRequestBody("image/*".toMediaTypeOrNull())
+                            compressedFile.asRequestBody("image/jpeg".toMediaType())
 
                         MultipartBody.Part.createFormData(
                             "files",
-                            file.name,
+                            compressedFile.name,
                             requestBody
                         )
                     }
@@ -103,20 +103,14 @@ class PostViewModel : ViewModel() {
                 }
 
                 val parts = imageUris.map { uri ->
-                    val inputStream = context.contentResolver.openInputStream(uri)
-                        ?: throw IllegalStateException("No se pudo abrir la imagen")
-
-                    val file = File.createTempFile("img_", ".jpg", context.cacheDir)
-                    file.outputStream().use { output ->
-                        inputStream.copyTo(output)
-                    }
+                    val compressedFile = ImageCompressionUtils.compress(context, uri)
 
                     val requestBody =
-                        file.asRequestBody("image/*".toMediaTypeOrNull())
+                        compressedFile.asRequestBody("image/jpeg".toMediaType())
 
-                    MultipartBody.Part.createFormData(
+                        MultipartBody.Part.createFormData(
                         "files",
-                        file.name,
+                        compressedFile.name,
                         requestBody
                     )
                 }
